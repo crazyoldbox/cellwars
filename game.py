@@ -3,7 +3,7 @@ import cell as Celula
 
 IMGDIR = "./data/sprites/"
 IMGTYPE ="png"
-DIM_WIN = (1000,800)
+DIM_WIN = (800,800)
 TYPES = {"red":RED,"blue":BLUE}
 CELL_NUM = 200
 FPS = 25
