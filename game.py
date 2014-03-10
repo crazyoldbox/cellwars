@@ -13,7 +13,7 @@ BLACK = (0,0,0)
 GREY = (150,150,150)
 DIM_WIN = (1000,800)
 TYPES = {"red":RED,"blue":BLUE}
-CELL_NUM = 100
+CELL_NUM = 200
 FPS = 25
 
 class Starter(PygameHelper):
