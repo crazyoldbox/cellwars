@@ -6,7 +6,7 @@ IMGTYPE ="png"
 DIM_WIN = (800,800)
 TYPES = {"red":RED,"blue":BLUE}
 CELL_NUM = 200
-FPS = 25
+FPS = 30
 
 class Starter(PygameHelper):
     def __init__(self, dim=(800,800), types={'blue':(0,0,255)}, cell_num=100):
