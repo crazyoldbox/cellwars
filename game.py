@@ -5,7 +5,7 @@ IMGDIR = "./data/sprites/"
 IMGTYPE ="png"
 DIM_WIN = (800,800)
 TYPES = {"red":RED,"blue":BLUE}
-CELL_NUM = 200
+CELL_NUM = 500
 FPS = 30
 
 class Starter(PygameHelper):
