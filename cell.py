@@ -59,7 +59,7 @@ class Cell:
         if self.energy <= self.energy_max :
             self.energy += amount
         else: self.energy = self.energy_max
-        
+
     def energyCheck(self):
         return (self.energy > 0)
 
@@ -67,7 +67,7 @@ class Cell:
         if self.hp < self.hp_max:
             self.hp += amount
             self.energyMod(-1)
-        
+
 
     def move(self,data=None):
 
@@ -121,7 +121,7 @@ class Cell:
     def attack(self):
         '''We first take away armor points and then go for HP. At the end
            we consume energy'''
-        
+
         for cell in  self.attacking:
             if cell.armor > 0:
                 cell.armor -= self.dps
@@ -169,14 +169,16 @@ class Mundo:
         self.dead,self.deads=[],{}
         self.ticks=0; self.maxticks=10000; self.thinktick=1
 
-    def populate(self, numcells=10):
+    def populate(self, numcells=10, clean=True):
 
         '''Creates dictionary and populates it with #num cells, positioning
            them inside the world map_dim boundaries, and chosing the type of
            cell randomly from the world tipos list. The keys have a tipo+int
            format(e.g "Blue12"). '''
-
-        for num in range(numcells):
+        if clean:
+            self.population,self.deads = {},{}
+        num_ini=len(self.population)+len(self.deads)
+        for num in range(num_ini,num_ini+numcells):
             tipo = random.choice(self.tipos)
             cell=Cell(self, tipo,tipo + str(num))
             self.population[cell.name] = cell
