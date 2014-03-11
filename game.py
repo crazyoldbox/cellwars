@@ -3,18 +3,21 @@ import cell as Celula
 
 IMGDIR = "./data/sprites/"
 IMGTYPE ="png"
-DIM_WIN = (850,800)
+DIM_WIN = (1000,800)
 TYPES = {"red":RED,"blue":BLUE}
-CELL_NUM = 500
-FPS = 30
+CELL_NUM = 200
+FPS = 24
 
 class Starter(PygameHelper):
-    def __init__(self, dim=(800,800), types={'blue':(0,0,255)}, cell_num=100):
+    def __init__(self, dim=(800,800), types={'blue':BLUE}, num_cells=100):
         PygameHelper.__init__(self, size=dim, fill= WHITE)
         self.tipos= types
-        self.mundo = Celula.Mundo(self.size,tipos=list(self.tipos.keys()))
+        self.num_cells=num_cells
+        self.wrldsize=list(dim)
+        self.wrldsize[0]*=0.9
+        self.mundo = Celula.Mundo(self.wrldsize,tipos=list(self.tipos.keys()))
         self.mundo.gamengine=self
-        self.mundo.populate(cell_num)
+        self.mundo.populate(num_cells)
         self.preload_types()
 
     def preload_types(self):
@@ -26,7 +29,6 @@ class Starter(PygameHelper):
 
     def update(self):
         self.mundo.actualizarMundo()
-        self.screen.fill(WHITE)
         # write number of cells by type
         ctp=[" "+type_+":"+str(len(self.mundo.popul_indexs[type_])) \
              for type_ in self.mundo.tipos]
@@ -51,49 +53,56 @@ class Starter(PygameHelper):
         def gui_quantity(slider):
             print ("val quantity",slider.value)
         def gui_run(_button):
-            self.running= not self.running
-            _button.value='stop'
+            self.game_running= not self.game_running
+            _button.value='Pause' if self.game_running else 'Start'
+        def gui_restart(_button):
+            self.mundo.populate(self.num_cells)
         def gui_nombre(_input):
             print ("Input ",_input.value)
 
         table=gui.Table()
-        fg = (0,0,0)
+        fg = BLACK
 
         table.tr()
-        table.td(gui.Label("",color=fg),colspan=2)
-
-        table.tr()
-        e=gui.Button("Runnn", name='run')
+        e=gui.Button("Start", name='run')
         e.connect(gui.CLICK, gui_run, e)
-        table.td(e,colspan=3)
+        table.td(e, align=-1,colspan=1)
 
         table.tr()
-        table.td(gui.Label("Speed: ",color=fg),align=1)
-        e = gui.HSlider(FPS,0,50,size=20,width=100,height=16,name='speed')
+        e=gui.Button("Restart", name='restart')
+        e.connect(gui.CLICK, gui_restart, e)
+        table.td(e, align=-1)
+
+        table.tr()
+        table.td(gui.Label("Speed:",color=fg),size=10, align=-1)
+        table.tr()
+        e = gui.HSlider(FPS,0,50,size=10,width=100,height=16,name='speed')
         e.connect(gui.CHANGE, gui_speed, e)
         table.td(e)
 
         table.tr()
-        table.td(gui.Label("Size: ",color=fg),align=1)
+        table.td(gui.Label("Size: ",color=fg), align=-1)
+        table.tr()
         e = gui.HSlider(30,5,50,size=20,width=100,height=16,name='size')
         table.td(e)
 
         table.tr()
-        table.td(gui.Label("Quantity: ",color=fg),align=1)
+        table.td(gui.Label("Quantity: ",color=fg),align=-1)
+        table.tr()
         e = gui.HSlider(100,1,1000,size=20,width=100,height=16,name='quantity')
         e.connect(gui.CHANGE, gui_quantity, e)
         table.td(e)
         table.tr()
-        table.td(gui.Label("Input"))
+        table.td(gui.Label("Input"), align=-1)
+        table.tr()
         e = gui.Input(value='Cuzco',size=8,name='nombre')
         e.connect(gui.ACTIVATE, gui_nombre,e)
-        table.td(e,colspan=3)
+        table.td(e)
 
-        table.tr()
-        table.td(gui.Label("Warp Speed: ",color=fg),align=1)
-        table.td(gui.Switch(value=False,name='warp'))
-
-        self.container.add(table,0,0)
+        cont=gui.Container(width=self.size[0]*0.1,height=self.size[1])
+        cont.add(table,0,0)
+        self.container.add(cont,self.size[0]*0.9,0)
+        #self.container.add(table,int(self.size[0]*0.8),0)
 
     def keyUp(self, key):
         pass
@@ -105,9 +114,4 @@ class Starter(PygameHelper):
         pass
 
 s = Starter(DIM_WIN,TYPES,CELL_NUM)
-while not s.running: #little temporal chapuza
-    s.draw()
-    s.gamengine.display.flip()
-    s.handleEvents()
-
 s.mainLoop(FPS)
