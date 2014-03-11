@@ -13,35 +13,41 @@ GREY = (150,150,150)
 
 
 class PygameHelper:
-    def __init__(self, size=(640,480), fill=(255,255,255)):
+    def __init__(self, size=(640,480), fill=WHITE,fps=0):
+        #game inicialitzations
+        self.fps= fps
+        self.window_running = False
+        self.game_running = False
         #pygame
         self.gamengine=pygame
-        pygame.init()
+        self.gamengine.init()
         self.size = size
-        self.screen = pygame.display.set_mode(size)
+        self.screen = self.gamengine.display.set_mode(size)
+        self.clock = self.gamengine.time.Clock() #to track FPS
+        #pygame inicialitzations
+        self.screen.fill(fill)
+        self.gamengine.display.flip()
         #GUI
         self.gui=gui; self.app=gui.App()
-        self.container=gui.Container(align=-1,valign=-1)
         self.form = gui.Form() # permits fm[n] access to all named widgets
-        self.add_widgets()
-        self.app.init(self.container)
-        #pygame parameters
-        self.screen.fill(fill)
-        pygame.display.flip()
-        self.clock = pygame.time.Clock() #to track FPS
-        self.fps= 0
-        self.running = False
+        #GUI inicialitzations
+        self.container=None
+        self.startgui()
 
-    def add_widgets(self):
-        table=gui.Table()
-        self.container.add(table,0,0)
+    def create_widgets(self):
+        container=gui.Container(align=-1,valign=-1)
+        return container
+
+    def startgui(self,func=None):
+        self.container = func(self) if func else self.create_widgets()
+        self.app.init(self.container)
 
     def handleEvents(self):
-        for event in pygame.event.get():
+        for event in self.gamengine.event.get():
             if event.type == QUIT:
-                self.running = False
+                self.window_running = False
             elif event.type == KEYUP and event.key == K_ESCAPE:
-                self.running = False
+                self.window_running = False
             self.app.event(event)  # control to GUI
 
             '''
@@ -54,20 +60,23 @@ class PygameHelper:
             '''
 
     #enter the main loop, possibly setting max FPS
-    def mainLoop(self, fps=0):
-        self.running = True
-        self.fps= fps
+    def mainLoop(self,fps=None):
+        if fps:
+            self.fps=fps
+        self.window_running = True
 
-        while self.running:
-            pygame.display.set_caption("FPS: %i" % self.clock.get_fps())
-            self.handleEvents()
-            self.update()
+        while self.window_running:
+            self.gamengine.display.set_caption("FPS: %i" % self.clock.get_fps())
+            self.screen.fill(WHITE)
+            if self.game_running:
+                self.update()
             self.draw()
-            pygame.display.flip()
+            self.gamengine.display.flip()
+            self.handleEvents()
             self.clock.tick(self.fps)
 
-        if self.running == False:
-            pygame.quit()
+        if not self.window_running:
+            self.gamengine.quit()
 
     def update(self):
         pass
@@ -82,8 +91,8 @@ class PygameHelper:
         self.draw_objects()
         self.draw_gui()
 
-    def printText(self, text, pos = (0,0), size = 24, color = (0,0,0)):
-        font = pygame.font.Font(None, size)
+    def printText(self, text, pos = (0,0), size = 24, color = BLACK):
+        font = self.gamengine.font.Font(None, size)
         text_surf = font.render(text,0,color)
         self.screen.blit(text_surf,pos)
 
@@ -103,14 +112,14 @@ class PygameHelper:
             if 'test' in _object.__dict__ and _object.text:
                 self.printText(_object.text,_object.pos)
         elif 'pos' in _object.__dict__:
-            self.gamengine.draw.rect(self.screen,(0,0,0),
+            self.gamengine.draw.rect(self.screen,BLACK,
                               (_object.pos[0],_object.pos[1],5,5),2)
 
     #wait until a key is pressed, then return
     def waitForKey(self):
         press=False
         while not press:
-            for event in pygame.event.get():
+            for event in self.gamengine.event.get():
                 if event.type == KEYUP:
                     press = True
 
