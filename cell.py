@@ -95,7 +95,8 @@ class Cell:
     def inrange(self,cell,rango):
         '''First we try to see if they are aprox in distance
            without using costly squared and roots if they are then
-           we qet the exact distance'''
+           we qet the exact distance if we receive range^2 it will be
+           faster to use get_dist_sqrd< range², because a sqrt is costly'''
 
         return (abs(self.pos.x-cell.pos.x)<rango) and \
                (abs(self.pos.y-cell.pos.y)<rango) and \
@@ -106,8 +107,9 @@ class Cell:
         '''Given a population(has to be a dictionary),and a range it will
            return a list of cells. We use selective to look only for different
            tipo cells, and first to return a maximum of 1.
-           ??? Could we optimize for attacking to look only in detected??'''
-
+           ??? Could we optimize for attacking to look only in detected??
+           Could we use a grid of tiles to simplify detecting proximity or perhaps
+           two ordered lists of cells by x and y coordinate+-'''
         if selective:
             searchdict=self.world.popul_indexs["N"+self.tipo]
         else:
@@ -146,7 +148,7 @@ class Cell:
                 self.dir=(self.pos-self.detected[0].pos).normalized()*self.speed
             else:
                 self.dir=V2d([self.speed,0]).rotated(random.randint(0,360))
-            # who to attack
+            # who to attack  cant we try to use the detected list?
             self.attacking=list(self.detect(self.attack_range,
                                             selective=True,first=True))
 
