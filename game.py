@@ -10,7 +10,7 @@ FPS = 24
 
 class Starter(PygameHelper):
     def __init__(self, dim=(800,800), types={'blue':BLUE},num_cells=10,fps=0):
-        PygameHelper.__init__(self, size=dim, fill= WHITE)
+        PygameHelper.__init__(self, size=dim, fill= WHITE,fps=fps)
         self.tipos= types
         self.num_cells=num_cells
         self.fps=fps
@@ -52,6 +52,16 @@ class Starter(PygameHelper):
             self.draw_object(cell,self.tipos[cell.tipo][0])
 
     def create_widgets(self):
+        '''creates an returns GUI structure a la DOM, that will be asigned to
+        self.container from wich startgui can start its painting
+        as startgui is called from the parent class sometimes we wont have al
+        the atributes as we need, so is useful to call it again at the end
+        of the init of the new class'''
+        #controlling we have al the atributes we need
+        for attr in ['fps','tipos']:
+            if not hasattr(self,attr):
+                return gui.Container(align=-1,valign=-1)
+
         def gui_speed(slider):
             self.fps=slider.value
             self.form['label_speed'].value='Speed:'+str(self.fps)
@@ -92,20 +102,19 @@ class Starter(PygameHelper):
         table.td(e, align=-1)
 
         table.tr()
-        cant= len(self.mundo.population) if hasattr(self,'tipos') else 1
+        cant= len(self.mundo.population)
         table.td(gui.Label('Qtty:'+str(cant)+'  ',color=fg,name='label_qtty'),\
                  align=-1)
         table.tr()
         e =gui.HSlider(cant,1,999,size=10,width=100,height=16,name='quantity')
         e.connect(gui.CHANGE, gui_quantity, e)
         table.td(e,align=-1)
-        if hasattr(self,'tipos'):
-            for tipo in self.tipos:
-                table.tr()
-                color=self.tipos[tipo][1]
-                cant=str(len(self.mundo.popul_indexs[tipo]))+' '
-                table.td(gui.Label(value=cant,color=color,name='num_'+tipo),\
-                         align=+1)
+        for tipo in self.tipos:
+            table.tr()
+            color=self.tipos[tipo][1]
+            cant=str(len(self.mundo.popul_indexs[tipo]))+' '
+            table.td(gui.Label(value=cant,color=color,name='num_'+tipo),\
+                     align=+1)
 
         table.tr()
         table.td(gui.Container(height=5))

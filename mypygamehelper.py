@@ -35,6 +35,12 @@ class PygameHelper:
         self.startgui()
 
     def create_widgets(self):
+        ''' Create all the widget structure and return it
+        this will be called by startgui. You sould override this function
+        in your child class, in case you need atributes of the child class
+        in this function then best move the execution of self.startqui() from
+        the parent to the child class __init__
+        '''
         container=gui.Container(align=-1,valign=-1)
         return container
 
@@ -101,17 +107,17 @@ class PygameHelper:
         considering the iterator attributes of pos ((x,y) and dir (dx,dy).
          If an image is given it will use it as sprite.'''
 
-        if image and 'pos' in _object.__dict__: #hasattr not working??
+        if image and hasattr(_object,'pos'):
             sprite = self.gamengine.sprite.Sprite() #() is default sprite group
             sprite.image=image
-            if 'dir' in _object.__dict__:
+            if hasattr(_object,'dir'):
                 sprite.image = self.gamengine.transform.rotate(image,\
                                               -_object.dir.get_angle()+270)
             sprite.rect = sprite.image.get_rect(center=_object.pos)
             self.screen.blit(sprite.image,sprite.rect)
-            if 'test' in _object.__dict__ and _object.text:
+            if hasattr(_object,'text') and _object.text:
                 self.printText(_object.text,_object.pos)
-        elif 'pos' in _object.__dict__:
+        elif hasattr(_object,'pos'):
             self.gamengine.draw.rect(self.screen,BLACK,
                               (_object.pos[0],_object.pos[1],5,5),2)
 
