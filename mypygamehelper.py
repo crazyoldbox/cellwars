@@ -13,30 +13,34 @@ GREY = (150,150,150)
 
 
 class PygameHelper:
-    def __init__(self, size=(640,480), fill=WHITE):
+    def __init__(self, size=(640,480), fill=WHITE,fps=0):
+        #game inicialitzations
+        self.fps= fps
+        self.window_running = False
+        self.game_running = False
         #pygame
         self.gamengine=pygame
         self.gamengine.init()
         self.size = size
         self.screen = self.gamengine.display.set_mode(size)
         self.clock = self.gamengine.time.Clock() #to track FPS
-        #GUI
-        self.gui=gui; self.app=gui.App()
-        self.container=gui.Container(align=-1,valign=-1)
-        self.form = gui.Form() # permits fm[n] access to all named widgets
-        self.add_widgets()
-        self.app.init(self.container)
         #pygame inicialitzations
         self.screen.fill(fill)
         self.gamengine.display.flip()
-        #game inicialitzations
-        self.fps= 0
-        self.window_running = False
-        self.game_running = False
+        #GUI
+        self.gui=gui; self.app=gui.App()
+        self.form = gui.Form() # permits fm[n] access to all named widgets
+        #GUI inicialitzations
+        self.container=None
+        self.startgui()
 
-    def add_widgets(self):
-        table=gui.Table()
-        self.container.add(table,0,0)
+    def create_widgets(self):
+        container=gui.Container(align=-1,valign=-1)
+        return container
+
+    def startgui(self,func=None):
+        self.container = func(self) if func else self.create_widgets()
+        self.app.init(self.container)
 
     def handleEvents(self):
         for event in self.gamengine.event.get():
@@ -56,9 +60,10 @@ class PygameHelper:
             '''
 
     #enter the main loop, possibly setting max FPS
-    def mainLoop(self, fps=0):
+    def mainLoop(self,fps=None):
+        if fps:
+            self.fps=fps
         self.window_running = True
-        self.fps= fps
 
         while self.window_running:
             self.gamengine.display.set_caption("FPS: %i" % self.clock.get_fps())
