@@ -15,7 +15,7 @@ class Starter(PygameHelper):
         self.num_cells=num_cells
         self.fps=fps
         self.wrldsize=list(dim)
-        self.wrldsize[0]*=0.9
+        self.wrldsize[0]=self.wrldsize[0]*0.9-15 #- 10% - 1/2 sprite width
         self.mundo = Celula.Mundo(self.wrldsize,tipos=list(self.tipos.keys()))
         self.mundo.gamengine=self
         self.mundo.populate(num_cells)
@@ -77,6 +77,7 @@ class Starter(PygameHelper):
         def gui_nombre(_input):
             print ("Input ",_input.value)
 
+        # try to be able to reescale the widgets
         table=gui.Table()
         fg = BLACK
 
@@ -126,7 +127,8 @@ class Starter(PygameHelper):
         e.connect(gui.ACTIVATE, gui_nombre,e)
         table.td(e)
 
-        cont=gui.Container(width=self.size[0]*0.1,height=self.size[1])
+        cont=gui.Container(width=self.size[0]*0.1,height=self.size[1],\
+                           background=(100,100,100))
         cont.add(table,0,0)
         container=gui.Container(align=-1,valign=-1)
         container.add(cont,self.size[0]*0.9,0)
