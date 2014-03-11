@@ -1,0 +1,18 @@
+Tareas:
+
+- Colisiones entre objetos
+
+- Animaciones para objetos
+
+- Dibujar las celulas/bots muertas para que los demas se las puedan comer y ganar energia
+
+- Una vez introducida la celula en el campo del GUI dar info de esa celula
+
+- Crear un fichero con BUGS, por ejemplo que aun se superponen algunos bots encima
+  del GUI  y que algunos numeros que aparecen en este estan cortados.
+
+- Insertar sonidos( Explosiones, Ataques, Musica)
+
+- Insertar botones para quitar musica
+
+- Poder insertar celula/bot con el mouse donde se quiera.

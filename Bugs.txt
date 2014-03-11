@@ -1,0 +1,5 @@
+Bugs:
+
+- Corregir dimensiones del GUI para que se vean bien todos sus elementos y no 
+  se superpongan con los sprites. Quiza que la zona menu tenga un fondo 
+  diferente. 
