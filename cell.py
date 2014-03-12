@@ -195,7 +195,9 @@ class Mundo:
             """think once more even if cell.isDead(): """
             if self.ticks%cell.ticks==cell.tick:
                 cell.primitiveAI()
-                new_borns.append(cell.reproduce())
+                son=cell.reproduce()
+                if son:
+                    new_borns.append(son)
         for cell in self.population.values():
             """act once more even if cell.isDead(): """
             cell.primitiveIS()
@@ -208,9 +210,8 @@ class Mundo:
            finally we optimeze population'''
 
         for son in new_borns:
-            if son:
-                self.population[son.name] = son
-        self.optimize_population()
+            self.population[son.name] = son
+        self.optimize_population(new_borns)
 
 
     def delete_dead_cells(self):
@@ -223,14 +224,23 @@ class Mundo:
             for index_ in self.popul_indexs.keys():
                 tmp=self.popul_indexs[index_].pop(muerto,None)
 
-    def optimize_population(self):
-        '''Using the actual population generates the following new
+    def optimize_population(self,searchiter=None):
+        '''Using the actual population generates/actualizes the following
            dictionaries for each type of cell:
                -ctpop[type]=dictionary with cells of this type
                -ctpop['N'+type]=dictionary of cells of other types
            '''
+        if type(searchiter)=='dict':
+            searchfunc=searchiter.values
+        elif hasattr(searchiter,'__iter__'):
+            searchfunc=searchiter.__iter__
+        else:
+            # if we dont receive or is not iterable use population, initialize
+            searchfunc=self.population.values
+            for tipo in self.tipos:
+                self.popul_indexs[tipo],self.popul_indexs['N'+tipo]= {},{}
         for tipo in self.tipos:
-            self.popul_indexs[tipo]={cell.name:cell for cell in \
-                                  self.population.values() if cell.tipo==tipo}
-            self.popul_indexs['N'+tipo]={cell.name:cell for cell in \
-                                  self.population.values() if cell.tipo!=tipo}
+            self.popul_indexs[tipo].update({cell.name:cell for cell in \
+                                  searchfunc() if cell.tipo==tipo})
+            self.popul_indexs['N'+tipo].update({cell.name:cell for cell in \
+                                  searchfunc() if cell.tipo!=tipo})
