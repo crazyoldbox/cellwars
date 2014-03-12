@@ -1,5 +1,7 @@
 Bugs:
 
-- Corregir dimensiones del GUI para que se vean bien todos sus elementos y no 
+hecho J- Corregir dimensiones del GUI para que se vean bien todos sus elementos y no 
   se superpongan con los sprites. Quiza que la zona menu tenga un fondo 
-  diferente. 
+  diferente. De todas formas los guis se las traen pero aparte de a lo mejor hacer algunas funciones facilitadoras
+  no estoy por la labor ahora de arreglar los pequeños bugs de pgu.
+

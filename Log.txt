@@ -16,3 +16,7 @@ Tareas:
 - Insertar botones para quitar musica
 
 - Poder insertar celula/bot con el mouse donde se quiera.
+
+- Comprobar que las celulas hijas se incorporen correctamente en las tablas de optimizacion y demas.
+        por ciero me he vuelto loco debugeando porque no me cuadraban los numeros de celulas hasta que me he dado cuenta
+        que las cabronas estaban criando,  joder,,,,, jjjjj
