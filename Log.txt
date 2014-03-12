@@ -1,15 +1,20 @@
 Tareas:
 
+- Refactorizar, refactorizar, refactorizar que con lo del control de gui se ha desmadrado a parches y hay que darle un enfoque global nuevo.
+
 - Colisiones entre objetos
 
 - Animaciones para objetos
 
 - Dibujar las celulas/bots muertas para que los demas se las puedan comer y ganar energia
 
-- Una vez introducida la celula en el campo del GUI dar info de esa celula
+hecho j- Una vez introducida la celula en el campo del GUI dar info de esa celula
+      patatero porque no encuentro como plegar el widget, tendre que hacerme uno especial
+      al final he hecho un widget especial que cuando clickas una celula te muestra la info con un boton para plegarlo
 
-- Crear un fichero con BUGS, por ejemplo que aun se superponen algunos bots encima
-  del GUI  y que algunos numeros que aparecen en este estan cortados.
+hecho YJ- Crear un fichero con BUGS, por ejemplo que aun se superponen algunos bots encima
+  del GUI  y que algunos numeros que aparecen en este estan cortados. 
+   Mantenemos el fichero pero esto deberia estar +- soluconado anunque el gui funciona como el culo
 
 - Insertar sonidos( Explosiones, Ataques, Musica)
 
@@ -17,6 +22,8 @@ Tareas:
 
 - Poder insertar celula/bot con el mouse donde se quiera.
 
-- Comprobar que las celulas hijas se incorporen correctamente en las tablas de optimizacion y demas.
+hecho YJ- Comprobar que las celulas hijas se incorporen correctamente en las tablas de optimizacion y demas.
         por ciero me he vuelto loco debugeando porque no me cuadraban los numeros de celulas hasta que me he dado cuenta
         que las cabronas estaban criando,  joder,,,,, jjjjj
+        Ya lo hacia, solo ya puestos he cambiado por si quieres que no tenga que hacerlo para todas las celulas sino para los recien nacidos, aunque si lo haces asi aun es un pco buggy
+
