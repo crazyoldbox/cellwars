@@ -28,7 +28,7 @@ class Cell:
         self.energy, self.energy_max = 100,100                  # energy
         # Relation of the cell with the engine
         self.ticks=12; self.tick=random.randint(0,self.ticks-1)  # refresh rate
-        self.text=""                                           # representation
+        self.text=''                                           # representation
         self.detected,self.attacking=[],[]                     # auxiliary
 
     def __str__(self):
@@ -215,13 +215,13 @@ class Mundo:
 
     def delete_dead_cells(self):
 
-        self.dead=[name for name,cell in self.population.items()\
-                   if cell.isDead()]
+        self.dead=list([name for name,cell in self.population.items()\
+                   if cell.isDead()])
         for muerto in self.dead:
             self.deads[muerto]=self.population[muerto]
-            del self.population[muerto]
+            tmp=self.population.pop(muerto,None)
             for index_ in self.popul_indexs.keys():
-                self.popul_indexs[index_].pop(muerto,None)
+                tmp=self.popul_indexs[index_].pop(muerto,None)
 
     def optimize_population(self):
         '''Using the actual population generates the following new
