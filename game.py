@@ -1,22 +1,17 @@
 from mypygamehelper import *
+from constants import *
 import cell as Celula
-
-IMGDIR = "./data/sprites/"
-IMGTYPE ="png"
-DIM_WIN = (1000,800)
-TYPES = {"red":RED,"blue":BLUE}
-CELL_NUM = 200
-FPS = 24
+import game_gui
 
 class Starter(PygameHelper):
-    def __init__(self, dim=(800,800), types={'blue':BLUE},num_cells=10,fps=0):
-        PygameHelper.__init__(self, size=dim, fill= WHITE,fps=fps)
+    def __init__(self, size=(800,800), types={'blue':BLUE},num_cells=10,fps=0):
+        PygameHelper.__init__(self, size=size, fill= WHITE,fps=fps)
         self.tipos= types
         self.num_cells=num_cells
+        self.size=size
         self.fps=fps
-        self.wrldsize=list(dim)
-        self.wrldsize[0]=self.wrldsize[0]*0.9-15 #- 10% - 1/2 sprite width
-        self.mundo = Celula.Mundo(self.wrldsize,tipos=list(self.tipos.keys()))
+        wrldsize=(size[0]-100-15,size[1]) #-right_GUI-sprite_width/2
+        self.mundo = Celula.Mundo(wrldsize,tipos=list(self.tipos.keys()))
         self.mundo.gamengine=self
         self.mundo.populate(num_cells)
         self.preload_types()
@@ -29,14 +24,11 @@ class Starter(PygameHelper):
             color=self.tipos[tipo]
             self.tipos[tipo]=[sprite_image,color]
 
-    def update(self):
+    def update_gui(self):
+        game_gui.update_gui(self)
+
+    def update_objects(self):
         self.mundo.actualizarMundo()
-        # write number of cells by type in GUI
-        self.form['label_qtty'].value= \
-                                'Qtty:'+str(len(self.mundo.population))+' '
-        for tipo in self.mundo.tipos:
-            self.form['num_'+tipo].value= \
-                                str(len(self.mundo.popul_indexs[tipo]))+' '
 
     def draw_objects(self):
         for cell in self.mundo.population.values():
@@ -52,94 +44,15 @@ class Starter(PygameHelper):
             self.draw_object(cell,self.tipos[cell.tipo][0])
 
     def create_widgets(self):
-        '''creates an returns GUI structure a la DOM, that will be asigned to
-        self.container from wich startgui can start its painting
-        as startgui is called from the parent class sometimes we wont have al
-        the atributes as we need, so is useful to call it again at the end
-        of the init of the new class'''
-        #controlling we have al the atributes we need
-        for attr in ['fps','tipos']:
-            if not hasattr(self,attr):
-                return gui.Container(align=-1,valign=-1)
-
-        def gui_speed(slider):
-            self.fps=slider.value
-            self.form['label_speed'].value='Speed:'+str(self.fps)
-
-        def gui_quantity(slider):
-            self.form['label_qtty'].value='Qtty:'+str(slider.value)+' '
-        def gui_run(_button):
-            self.game_running= not self.game_running
-            _button.value='Pause' if self.game_running else 'Start'
-        def gui_restart(_button):
-            self.mundo.population={}
-            self.mundo.populate(self.form['quantity'].value)
-        def gui_nombre(_input):
-            print ("Input ",_input.value)
-
-        # try to be able to reescale the widgets
-        table=gui.Table()
-        fg = BLACK
-
-        table.tr()
-        e=gui.Button("Start", name='run')
-        e.connect(gui.CLICK, gui_run, e)
-        table.td(e, align=-1,colspan=1)
-
-        table.tr()
-        table.td(gui.Label("Speed:"+str(self.fps)+" ",color=fg, \
-                           name='label_speed'),size=10, align=-1)
-        table.tr()
-        e = gui.HSlider(self.fps,0,50,size=10,width=100,height=16,name='speed')
-        e.connect(gui.CHANGE, gui_speed, e)
-        table.td(e, align=-1)
-
-        table.tr()
-        table.td(gui.Container(height=5))
-
-        table.tr()
-        e=gui.Button("Restart", name='restart')
-        e.connect(gui.CLICK, gui_restart, e)
-        table.td(e, align=-1)
-
-        table.tr()
-        cant= len(self.mundo.population)
-        table.td(gui.Label('Qtty:'+str(cant)+'  ',color=fg,name='label_qtty'),\
-                 align=-1)
-        table.tr()
-        e =gui.HSlider(cant,1,999,size=10,width=100,height=16,name='quantity')
-        e.connect(gui.CHANGE, gui_quantity, e)
-        table.td(e,align=-1)
-        for tipo in self.tipos:
-            table.tr()
-            color=self.tipos[tipo][1]
-            cant=str(len(self.mundo.popul_indexs[tipo]))+' '
-            table.td(gui.Label(value=cant,color=color,name='num_'+tipo),\
-                     align=+1)
-
-        table.tr()
-        table.td(gui.Container(height=5))
-
-        table.tr()
-        table.td(gui.Label("Selected Cell"), align=-1)
-        table.tr()
-        e = gui.Input(value='cellname',size=10,name='cell_name', align=-1)
-        e.connect(gui.ACTIVATE, gui_nombre,e)
-        table.td(e)
-
-        cont=gui.Container(width=self.size[0]*0.1,height=self.size[1],\
-                           background=(100,100,100))
-        cont.add(table,0,0)
-        container=gui.Container(align=-1,valign=-1)
-        container.add(cont,self.size[0]*0.9,0)
-        return container
+        return game_gui.create_widgets(self)
 
     def keyUp(self, key):
         pass
     def mouseUp(self, button, pos):
         pass
     def mouseDown(self, button, pos):
-        pass
+        game_gui.verify_mouse(self,button, pos)
+
     def mouseMotion(self, buttons, pos, rel):
         pass
 

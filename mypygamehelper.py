@@ -3,14 +3,7 @@ from pygame.locals import *
 # the following line is not needed if pgu is installed
 #  ?? import sys; sys.path.insert(0, "..")
 from pgu import gui
-#colors
-RED = (255,0,0)
-BLUE = (0,0,255)
-GREEN = (0,255,0)
-WHITE = (255,255,255)
-BLACK = (0,0,0)
-GREY = (150,150,150)
-
+from constants import *
 
 class PygameHelper:
     def __init__(self, size=(640,480), fill=WHITE,fps=0):
@@ -41,7 +34,7 @@ class PygameHelper:
         in this function then best move the execution of self.startqui() from
         the parent to the child class __init__
         '''
-        container=gui.Container(align=-1,valign=-1)
+        container=self.gui.Container(align=-1,valign=-1)
         return container
 
     def startgui(self,func=None):
@@ -54,6 +47,8 @@ class PygameHelper:
                 self.window_running = False
             elif event.type == KEYUP and event.key == K_ESCAPE:
                 self.window_running = False
+            elif event.type==MOUSEBUTTONDOWN:
+                self.mouseDown(event.button, event.pos)
             self.app.event(event)  # control to GUI
 
             '''
@@ -74,17 +69,24 @@ class PygameHelper:
         while self.window_running:
             self.gamengine.display.set_caption("FPS: %i" % self.clock.get_fps())
             self.screen.fill(WHITE)
-            if self.game_running:
-                self.update()
+            self.handleEvents()
+            self.update()
             self.draw()
             self.gamengine.display.flip()
-            self.handleEvents()
             self.clock.tick(self.fps)
 
         if not self.window_running:
             self.gamengine.quit()
 
     def update(self):
+        if self.game_running:
+            self.update_objects()
+        self.update_gui()
+
+    def update_objects(self):
+        pass
+
+    def update_gui(self):
         pass
 
     def draw_gui(self):
