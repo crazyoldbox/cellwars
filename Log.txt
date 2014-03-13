@@ -2,6 +2,8 @@ Tareas:
 
 - Refactorizar, refactorizar, refactorizar que con lo del control de gui se ha desmadrado a parches y hay que darle un enfoque global nuevo.
 
+- revisar indicaciones en comentarios (añadir algunas al log) y limpiar comentarios.
+
 - Colisiones entre objetos
 
 - Animaciones para objetos
