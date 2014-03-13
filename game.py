@@ -7,9 +7,6 @@ class Starter(PygameHelper):
     def __init__(self, size=(800,800), types={'blue':BLUE},num_cells=10,fps=0):
         PygameHelper.__init__(self, size=size, fill= WHITE,fps=fps)
         self.tipos= types
-        self.num_cells=num_cells
-        self.size=size
-        self.fps=fps
         wrldsize=(size[0]-100-15,size[1]) #-right_GUI-sprite_width/2
         self.mundo = Celula.Mundo(wrldsize,tipos=list(self.tipos.keys()))
         self.mundo.gamengine=self

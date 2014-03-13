@@ -4,21 +4,27 @@ from pygame.locals import *
 #  ?? import sys; sys.path.insert(0, "..")
 from pgu import gui
 from constants import *
+# change de file and class of pygamehelper to helper or game_skeleton
+# also maybe as we are doing with the gui, and already done with the cells
+# logic we could extract the objects drawing to a new file
+# also would like to be able to dinamically (list,dict,..) add functions to be
+# executed by each of the main methods of the mainloop
 
 class PygameHelper:
     def __init__(self, size=(640,480), fill=WHITE,fps=0):
         #game inicialitzations
-        self.fps= fps
         self.window_running = False
         self.game_running = False
         #pygame
         self.gamengine=pygame
         self.gamengine.init()
         self.size = size
+        self.fps= fps
+        self.fill=fill
         self.screen = self.gamengine.display.set_mode(size)
         self.clock = self.gamengine.time.Clock() #to track FPS
         #pygame inicialitzations
-        self.screen.fill(fill)
+        self.screen.fill(self.fill)
         self.gamengine.display.flip()
         #GUI
         self.gui=gui; self.app=gui.App()
@@ -34,6 +40,12 @@ class PygameHelper:
         in this function then best move the execution of self.startqui() from
         the parent to the child class __init__
         '''
+        # so should we think of a function/way to defer the execution of
+        # stargui till all atributes in self are setted in child class or
+        # just call the __init__ parent at the end of the child,.. thats the
+        # problem with overwriting methods used in parent __init__
+        # actually im verifiying manually in create widgets, perhaps it can be
+        # made automatically by instrospection..
         container=self.gui.Container(align=-1,valign=-1)
         return container
 
@@ -68,7 +80,7 @@ class PygameHelper:
 
         while self.window_running:
             self.gamengine.display.set_caption("FPS: %i" % self.clock.get_fps())
-            self.screen.fill(WHITE)
+            self.screen.fill(self.fill)
             self.handleEvents()
             self.update()
             self.draw()
