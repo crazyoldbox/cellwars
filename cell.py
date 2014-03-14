@@ -9,6 +9,7 @@ import random
 import math
 import time
 from vec2d import vec2d as V2d
+from animations import *
 
 class Cell:
     def __init__(self,world=None,tipo = 'Blue',name="Blue1"):
@@ -30,7 +31,8 @@ class Cell:
         self.ticks=12; self.tick=random.randint(0,self.ticks-1)  # refresh rate
         self.text=''                                           # representation
         self.detected,self.attacking=[],[]                     # auxiliary
-        self.status = 'idle'
+        # Animates taking in account status
+        self.status = 'idle', self.animate = Animate()         
 
     def __str__(self):
         return 'This is cell {} in {} position and {}HP left going {}'.\
