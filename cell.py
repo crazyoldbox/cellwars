@@ -163,7 +163,8 @@ class Cell:
         if self.energyCheck():
             self.attack()
             self.move(self.detected[0]) if self.detected else self.move(self.dir)
-
+            if self.attacking: self.status = 'attack'
+            
 class World:
 
     def __init__(self,size, tipos = ['Blue','Red']):

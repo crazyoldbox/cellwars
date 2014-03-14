@@ -51,8 +51,12 @@ class Starter(Skeleton):
                              cell.pos+(CELL_W*cell.hp/100-CELL_W/2,-15),2)
             self.gamengine.draw.line(self.screen,BLUE,cell.pos-(CELL_W/2,17),
                              cell.pos+(CELL_W*cell.energy/100-CELL_W/2,-17),2)
+
+
+            sprite = cell.animate.createSprite(self.world.ticks)
+            self.screen.blit(sprite.image,sprite.rect)
             #draws any object using its best of pos, dir arguments with
-            self.draw_object(cell,self.tipos[cell.tipo][0])
+            #self.draw_object(cell,self.tipos[cell.tipo][0])
 
     def click_cell(self, event):
         if event.button==1 and event.pos[0]<self.world.size[0]:
