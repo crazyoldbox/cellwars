@@ -30,6 +30,7 @@ class Cell:
         self.ticks=12; self.tick=random.randint(0,self.ticks-1)  # refresh rate
         self.text=''                                           # representation
         self.detected,self.attacking=[],[]                     # auxiliary
+        self.status = 'idle'
 
     def __str__(self):
         return 'This is cell {} in {} position and {}HP left going {}'.\
@@ -90,6 +91,7 @@ class Cell:
             self.pos+=vdir
         self.pos%=self.world.size # correct if it goes past one side
         self.energyMod()
+        self.status = 'move'
 
 
     def inrange(self,cell,rango):
@@ -130,6 +132,7 @@ class Cell:
             else:
                 cell.hp -= self.dps
             self.energyMod(-1)
+        self.status = 'attack'
 
     def primitiveAI(self):
 
