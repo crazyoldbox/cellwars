@@ -7,7 +7,7 @@ class Starter(Skeleton):
     def __init__(self, size=(800,800), types={'blue':BLUE},num_cells=10,fps=0):
         Skeleton.__init__(self, size=size, fill= WHITE,fps=fps)
         self.tipos= types
-        wrldsize=(size[0]-100-15,size[1]) #-right_GUI-sprite_width/2
+        wrldsize=(size[0]-100-CELL_W/2,size[1]) #-right_GUI-sprite_width/2
         self.world = Objects.World(wrldsize,tipos=list(self.tipos.keys()))
         self.world.gamengine=self
         self.world.populate(num_cells)
@@ -45,12 +45,12 @@ class Starter(Skeleton):
         for cell in self.world.population.values():
 
             # Paints health and energy bar
-            self.gamengine.draw.line(self.screen,RED,cell.pos-(25/2,15),
-                             cell.pos+(25/2,-15),2)
-            self.gamengine.draw.line(self.screen,GREEN,cell.pos-(25/2,15),
-                             cell.pos+(25*cell.hp/100-25/2,-15),2)
-            self.gamengine.draw.line(self.screen,BLUE,cell.pos-(25/2,17),
-                             cell.pos+(25*cell.energy/100-25/2,-17),2)
+            self.gamengine.draw.line(self.screen,RED,cell.pos-(CELL_W/2,15),
+                             cell.pos+(CELL_W/2,-15),2)
+            self.gamengine.draw.line(self.screen,GREEN,cell.pos-(CELL_W/2,15),
+                             cell.pos+(CELL_W*cell.hp/100-CELL_W/2,-15),2)
+            self.gamengine.draw.line(self.screen,BLUE,cell.pos-(CELL_W/2,17),
+                             cell.pos+(CELL_W*cell.energy/100-CELL_W/2,-17),2)
             #draws any object using its best of pos, dir arguments with
             self.draw_object(cell,self.tipos[cell.tipo][0])
 
