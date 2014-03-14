@@ -32,7 +32,7 @@ class Cell:
         self.text=''                                           # representation
         self.detected,self.attacking=[],[]                     # auxiliary
         # Animates taking in account status
-        self.status = 'idle', self.animate = Animate()         
+        self.status = 'idle'; self.animate = Animate(self)         
 
     def __str__(self):
         return 'This is cell {} in {} position and {}HP left going {}'.\
