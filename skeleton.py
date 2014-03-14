@@ -4,14 +4,14 @@ from pygame.locals import *
 #  ?? import sys; sys.path.insert(0, "..")
 from pgu import gui
 from constants import *
-# change de file and class of pygamehelper to helper or game_skeleton
+import utils
 # also maybe as we are doing with the gui, and already done with the cells
 # logic we could extract the objects drawing to a new file
 # also would like to be able to dinamically (list,dict,..) add functions to be
 # executed by each of the main methods of the mainloop
 
-class PygameHelper:
-    def __init__(self, size=(640,480), fill=WHITE,fps=0):
+class Skeleton(object):
+    def __init__(self, size=(640,480), fill=WHITE,fps=24):
         #game inicialitzations
         self.window_running = False
         self.game_running = False
@@ -31,48 +31,43 @@ class PygameHelper:
         self.form = gui.Form() # permits fm[n] access to all named widgets
         #GUI inicialitzations
         self.container=None
+        #Event management
+        self.handled_events=[]
+        self.add_events()
+        #Utils
+        #### Adding an external function
+        self.bound_func=utils.bound_func
+
+    def handle_event_quit(self,event):
+        '''Example event handler, event has:.key,.button,.pos and
+        .type (QUIT,MOUSEBUTTONDOWN,MOUSEBUTTONUP,MOUSEMOTION,KEYDOWN,KEYUP '''
+        self.window_running = False
+
+    def add_events(self):
+        events=[
+            ('quit','event.type == QUIT',self.handle_event_quit)
+            ]
+        self.handled_events.extend(events)
+
+    def start(self,fps=None):
         self.startgui()
+        self.mainLoop(fps=fps)
 
-    def create_widgets(self):
-        ''' Create all the widget structure and return it
-        this will be called by startgui. You sould override this function
-        in your child class, in case you need atributes of the child class
-        in this function then best move the execution of self.startqui() from
-        the parent to the child class __init__
-        '''
-        # so should we think of a function/way to defer the execution of
-        # stargui till all atributes in self are setted in child class or
-        # just call the __init__ parent at the end of the child,.. thats the
-        # problem with overwriting methods used in parent __init__
-        # actually im verifiying manually in create widgets, perhaps it can be
-        # made automatically by instrospection..
-        container=self.gui.Container(align=-1,valign=-1)
-        return container
-
-    def startgui(self,func=None):
+    def startgui(self,func=None): #could use other to swap gui
         self.container = func(self) if func else self.create_widgets()
         self.app.init(self.container)
 
+    def create_widgets(self):
+        '''Return a container with all your gui widgets, override in subclass'''
+        return self.gui.Container(align=-1,valign=-1)
+
     def handleEvents(self):
         for event in self.gamengine.event.get():
-            if event.type == QUIT:
-                self.window_running = False
-            elif event.type == KEYUP and event.key == K_ESCAPE:
-                self.window_running = False
-            elif event.type==MOUSEBUTTONDOWN:
-                self.mouseDown(event.button, event.pos)
+            for name, cond, func in self.handled_events:
+                if eval(cond):
+                    func(event)
             self.app.event(event)  # control to GUI
 
-            '''
-            elif event.type == MOUSEBUTTONUP:
-                self.mouseUp(event.button, event.pos)
-            elif event.type == MOUSEMOTION:
-                self.mouseMotion(event.buttons, event.pos, event.rel)
-            elif event.type == MOUSEBUTTONDOWN:
-                self.mouseDown(event.button, event.pos)
-            '''
-
-    #enter the main loop, possibly setting max FPS
     def mainLoop(self,fps=None):
         if fps:
             self.fps=fps
@@ -95,6 +90,10 @@ class PygameHelper:
             self.update_objects()
         self.update_gui()
 
+    def draw(self):
+        self.draw_objects()
+        self.draw_gui()
+
     def update_objects(self):
         pass
 
@@ -106,10 +105,6 @@ class PygameHelper:
 
     def draw_objects(self):
         pass
-
-    def draw(self):
-        self.draw_objects()
-        self.draw_gui()
 
     def printText(self, text, pos = (0,0), size = 24, color = BLACK):
         font = self.gamengine.font.Font(None, size)
@@ -157,5 +152,12 @@ class PygameHelper:
 
     def mouseMotion(self, buttons, pos, rel):
         pass
+
+    def add_functions(self):
+        '''adds external functions as bounded methods so dont need to add self
+        in calls, uses
+        example:
+        self.myfunc=self.add_bound_func(self,externalfunc)
+        '''
 
 

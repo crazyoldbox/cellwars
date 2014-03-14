@@ -25,32 +25,22 @@ class ShowInfo(gui.Container):
         name.connect(gui.CLICK,self.remove,table)
         self.add(table,0,0)
 
-def update_gui(self):
+def update_interface(self):
     #write number of cells by type
-    for tipo in self.mundo.tipos:
+    for tipo in self.world.tipos:
         self.form['num_'+tipo].value= \
-                '{:>14}'.format(len(self.mundo.popul_indexs[tipo]))
+                '{:>14}'.format(len(self.world.popul_indexs[tipo]))
     #write data on selected cell
     info=self.form['info']
-    if info.widgets!=[] and info.button.value in self.mundo.population:
-        text='';cell=self.mundo.population[info.button.value]
+    if info.widgets!=[] and info.button.value in self.world.population:
+        text='';cell=self.world.population[info.button.value]
         for attr in ['tipo','armor','hp','dps','sons','energy']:
             text=text+attr+':'+str(getattr(cell,attr))+'\n'
         info.text(text)
 
-def verify_mouse(self,button,pos):
-    foundcell=False
-    if pos[0]<self.mundo.map_dim[0]:
-        if button==1:
-            for cell in self.mundo.population.values():
-                if cell.pos.get_distance(pos)<50:
-                    foundcell=cell
-                    break
-    if foundcell:
-        info=self.form['info']; text=''
-        for attr in ['tipo','armor','hp','dps','sons','energy']:
-            text=text+attr+':'+str(getattr(foundcell,attr))+'\n'
-        info.addinfo(foundcell.name,text)
+def show_info(self,title,text):
+    info=self.form['info'];
+    info.addinfo(title,text)
 
 def create_widgets(self):
     '''creates an returns GUI structure a la DOM, that will be asigned to
@@ -75,8 +65,8 @@ def create_widgets(self):
         _button.value='Pause' if self.game_running else 'Start'
 
     def gui_restart(_button):
-        self.mundo.population,self.mundo.deads = {},{}
-        self.mundo.populate(self.form['quantity'].value)
+        self.world.population,self.world.deads = {},{}
+        self.world.populate(self.form['quantity'].value)
 
     # try to be able to reescale the widgets
     table=g.Table(name='tabla')
@@ -104,7 +94,7 @@ def create_widgets(self):
     table.td(e)
 
     table.tr()
-    cant= len(self.mundo.population)
+    cant= len(self.world.population)
     table.td(g.Label('Qtty:{:>5}'.format(cant),color=fg,\
               name='label_qtty',size=10),align=-1)
     table.tr()
@@ -114,7 +104,7 @@ def create_widgets(self):
     for tipo in self.tipos:
         table.tr()
         color=self.tipos[tipo][1]
-        cant='{:>14}'.format(len(self.mundo.popul_indexs[tipo]))
+        cant='{:>14}'.format(len(self.world.popul_indexs[tipo]))
         table.td(g.Label(value=cant,color=color,name='num_'+tipo,\
                             size=10),align=-1)
     table.tr()
@@ -124,7 +114,7 @@ def create_widgets(self):
     cont=g.Container(width=100,height=self.size[1],\
                        background=GREY,align=-1)
     cont.add(table,0,0)
-    container=g.Container()#width=self.size[0],height=self.size[1],align=-1,valign=-1)
+    container=g.Container(align=-1,valign=-1)
     container.add(cont,self.size[0]-100,0)
     return container
 
