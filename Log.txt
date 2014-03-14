@@ -20,7 +20,7 @@ hecho YJ- Crear un fichero con BUGS, por ejemplo que aun se superponen algunos b
 
 - Insertar sonidos( Explosiones, Ataques, Musica)
 
-- Insertar botones para quitar musica
+- Insertar botones para poner/quitar musica
 
 - Poder insertar celula/bot con el mouse donde se quiera.
 
