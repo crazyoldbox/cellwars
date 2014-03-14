@@ -13,7 +13,7 @@ IMGDIR = "./data/sprites/"
 IMGTYPE ="png"
 
 # inicialitzations
-DIM_WIN = (1000,800)
+DIM_WIN = (1440,900)
 TYPES = {"red":RED,"blue":BLUE}
 CELL_NUM = 200
 FPS = 24
