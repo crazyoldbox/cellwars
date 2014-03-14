@@ -138,26 +138,10 @@ class Skeleton(object):
                 if event.type == KEYUP:
                     press = True
 
-    def keyDown(self, key):
-        pass
-
-    def keyUp(self, key):
-        pass
-
-    def mouseUp(self, button, pos):
-        pass
-
-    def mouseDown(self, button, pos):
-        pass
-
-    def mouseMotion(self, buttons, pos, rel):
-        pass
-
     def add_functions(self):
         '''adds external functions as bounded methods so dont need to add self
-        in calls, uses
-        example:
-        self.myfunc=self.add_bound_func(self,externalfunc)
-        '''
+        in calls, example:
+        self.myfunc=self.add_bound_func(self,externalfunc) '''
+        pass
 
 
