@@ -41,3 +41,5 @@ nosetests.xml
 #Temporals
 *.*~
 
+#tests directory
+tests
