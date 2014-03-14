@@ -17,8 +17,8 @@ class Cell:
         self.tipo, self.name = tipo,name
         # Relation of the cell with de world
         self.view_range,self.speed = 80,2
-        self.pos = V2d([random.random()*world.map_dim[0],
-                        random.random()*world.map_dim[1]])
+        self.pos = V2d([random.random()*world.size[0],
+                        random.random()*world.size[1]])
         self.dir=V2d([self.speed,0]).rotated(random.randint(0,360))
         # Relation of the cell with other cells
         self.armor, self.hp,self.hp_max = 0,100,100              # defend
@@ -88,7 +88,7 @@ class Cell:
         else:
             vdir=V2d([self.speed,0]).rotated(random.randint(0,360))
             self.pos+=vdir
-        self.pos%=self.world.map_dim # correct if it goes past one side
+        self.pos%=self.world.size # correct if it goes past one side
         self.energyMod()
 
 
@@ -159,11 +159,11 @@ class Cell:
             self.attack()
             self.move(self.detected[0]) if self.detected else self.move(self.dir)
 
-class Mundo:
+class World:
 
-    def __init__(self,map_dim, tipos = ['Blue','Red']):
+    def __init__(self,size, tipos = ['Blue','Red']):
 
-        self.map_dim = map_dim
+        self.size = size
         self.population={}
         # auxiliary data
         self.popul_indexs={}
@@ -174,7 +174,7 @@ class Mundo:
     def populate(self, numcells=10, clean=True):
 
         '''Creates dictionary and populates it with #num cells, positioning
-           them inside the world map_dim boundaries, and chosing the type of
+           them inside the world size boundaries, and chosing the type of
            cell randomly from the world tipos list. The keys have a tipo+int
            format(e.g "Blue12"). '''
         if clean:
@@ -187,7 +187,7 @@ class Mundo:
         # generate optimized dictionaries for each type
         self.optimize_population()
 
-    def actualizarMundo(self):
+    def actualizeWorld(self):
 
         new_borns = []
         self.ticks=(self.ticks+1) % self.maxticks
