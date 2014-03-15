@@ -39,7 +39,12 @@ nosetests.xml
 *.nja
 
 #Temporals
+# temporal wkspace
 *.*~
+#temporal images db
+*.db
 
 #tests directory
 tests
+
+
