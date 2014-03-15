@@ -1,4 +1,4 @@
-Tareas:
+﻿Tareas:
 
 - Refactorizar, refactorizar, refactorizar que con lo del control de gui se ha desmadrado a parches y hay que darle un enfoque global nuevo.
 
@@ -6,7 +6,14 @@ Tareas:
 
 - Colisiones entre objetos
 
-- Animaciones para objetos
+hecho Y- Animaciones para objetos. Se ha aplicado un pequeño motor de animaciones. Recibe un objeto y devuelve el sprite 
+         correspondiente ya girado. Las animaciones han reducido el rendimiento general. Se ha aplicado una cache como 
+         atributo de la clase y el rendimiento ha mejorado pero aun no se ha recuperado.
+
+- Mejora de rendimiento en Animaciones: Se sugiere que se cache directamente sprite.image con respecto a la localizacion y 
+  el angulo. Aparte de las mejora de rendimiento las animaciones deben poder hacerse para cualquier usuario(Cell,Misil,...)
+  habria que poder identificarlo(Ahora lo hago a pelo con Cell). Tmb habria que cambiar la velocidad de la animacion segun  
+  la animacion de la que se trate!
 
 - Dibujar las celulas/bots muertas para que los demas se las puedan comer y ganar energia
 
