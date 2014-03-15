@@ -7,6 +7,8 @@ import os
 
 class Animate():
 
+    cache = {} #To optimize pygame load
+
     def __init__(self, object_, ani_speed=3):
 
         self.object = object_
@@ -19,6 +21,8 @@ class Animate():
         self.loc = IMGDIR+self.user +'/'+ self.object.tipo + '/'
         self.status = None
         self.image = None
+        self.sprite = pygame.sprite.Sprite()
+        self.dir = None
         #Initialize
         self.createSprite(0)
 
@@ -42,11 +46,15 @@ class Animate():
             self.image_dir = self.images[self.image_pos]
             self.image_pos = (self.image_pos+1)%self.len_images
             location = self.loc+ self.object.status +'/'+ self.image_dir
-            self.image = pygame.image.load(location).convert_alpha()
-            return self.image
+            if location not in Animate.cache.keys():
+                self.image = pygame.image.load(location).convert_alpha()
+                Animate.cache[location] = self.image
+            else: self.image = Animate.cache[location]
+
+            self.sprite.image = self.image
 
         else:
-            return self.image
+            self.sprite.image = self.image
 
     def createSprite(self, ticks):
         '''We check if there was a change on status, if there was we
@@ -56,13 +64,14 @@ class Animate():
         if self.object.status != self.status:
             self.extractImages()
             force = True
-        sprite = pygame.sprite.Sprite()
-        sprite.image = self.selectImage(ticks, force)
-        if hasattr(self.object,'dir'):
-            sprite.image = pygame.transform.rotate(sprite.image,\
+        self.selectImage(ticks, force)
+
+        if hasattr(self.object,'dir') :
+
+            self.sprite.image = pygame.transform.rotate(self.sprite.image,\
                                - self.object.dir.get_angle()+270)
 
-        sprite.rect = sprite.image.get_rect(center=self.object.pos)
+        self.sprite.rect = self.sprite.image.get_rect(center=self.object.pos)
 
-        return sprite
+        return self.sprite
 
