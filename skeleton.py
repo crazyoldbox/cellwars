@@ -9,6 +9,7 @@ import utils
 # logic we could extract the objects drawing to a new file
 # also would like to be able to dinamically (list,dict,..) add functions to be
 # executed by each of the main methods of the mainloop
+import time
 
 class Skeleton(object):
     def __init__(self, size=(640,480), fill=WHITE,fps=24):
@@ -33,10 +34,14 @@ class Skeleton(object):
         self.container=None
         #Event management
         self.handled_events=[]
-        self.add_events()
         #Utils
         #### Adding an external function
         self.bound_func=utils.bound_func
+
+    def start(self,fps=None):
+        self.add_events()
+        self.startgui()
+        self.mainLoop(fps=fps)
 
     def handle_event_quit(self,event):
         '''Example event handler, event has:.key,.button,.pos and
@@ -48,10 +53,6 @@ class Skeleton(object):
             ('quit','event.type == QUIT',self.handle_event_quit)
             ]
         self.handled_events.extend(events)
-
-    def start(self,fps=None):
-        self.startgui()
-        self.mainLoop(fps=fps)
 
     def startgui(self,func=None): #could use other to swap gui
         self.container = func(self) if func else self.create_widgets()
@@ -74,25 +75,39 @@ class Skeleton(object):
         self.window_running = True
 
         while self.window_running:
+            t1=time.process_time()
             self.gamengine.display.set_caption("FPS: %i" % self.clock.get_fps())
             self.screen.fill(self.fill)
             self.handleEvents()
+            t2=time.process_time()
             self.update()
+            t3=time.process_time()
             self.draw()
+            t4=time.process_time()
             self.gamengine.display.flip()
             self.clock.tick(self.fps)
+            t5=time.process_time()
+            print ('loop:ini{}update{}draw{}fin{}'.format(t2-t1,t3-t2,t4-t3,t5-t4))
 
         if not self.window_running:
             self.gamengine.quit()
 
     def update(self):
+        t1=time.process_time()
         if self.game_running:
             self.update_objects()
+        t2=time.process_time()
         self.update_gui()
+        t3=time.process_time()
+        print ('update:obj{}gui{}'.format(t2-t1,t3-t2))
 
     def draw(self):
+        t1=time.process_time()
         self.draw_objects()
+        t2=time.process_time()
         self.draw_gui()
+        t3=time.process_time()
+        print ('draw:objects{}gui{}'.format(t2-t1,t3-t2))
 
     def update_objects(self):
         pass

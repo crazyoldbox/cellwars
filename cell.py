@@ -10,6 +10,7 @@ import math
 import time
 from vec2d import vec2d as V2d
 from animations import *
+from smartcells import Poscells
 
 class Cell:
     def __init__(self,world=None,tipo = 'Blue',name="Blue1"):
@@ -29,10 +30,10 @@ class Cell:
         self.energy, self.energy_max = 100,100                  # energy
         # Relation of the cell with the engine
         self.ticks=12; self.tick=random.randint(0,self.ticks-1)  # refresh rate
-        self.text=''                                           # representation
+        self.text=self.name                                           # representation
         self.detected,self.attacking=[],[]                     # auxiliary
         # Animates taking in account status
-        self.status = 'idle'; self.animate = Animate(self)         
+        self.status = 'idle'; self.animate = Animate(self)
 
     def __str__(self):
         return 'This is cell {} in {} position and {}HP left going {}'.\
@@ -115,6 +116,14 @@ class Cell:
            Could we use a grid of tiles to simplify detecting proximity or perhaps
            two ordered lists of cells by x and y coordinate+-'''
         if selective:
+
+            for e in (self.world.ordered.inrange(self.pos,rango)&\
+            set(self.world.popul_indexs['N'+self.tipo].values())):
+                yield e
+                if first:
+                    break
+            return None
+        if selective:
             searchdict=self.world.popul_indexs["N"+self.tipo]
         else:
             searchdict=self.world.population
@@ -164,7 +173,7 @@ class Cell:
             self.attack()
             self.move(self.detected[0]) if self.detected else self.move(self.dir)
             if self.attacking: self.status = 'attack'
-            
+
 class World:
 
     def __init__(self,size, tipos = ['Blue','Red']):
@@ -176,6 +185,7 @@ class World:
         self.tipos = tipos
         self.dead,self.deads=[],{}
         self.ticks=0; self.maxticks=10000; self.thinktick=1
+        self.ordered=None
 
     def populate(self, numcells=10, clean=True):
 
@@ -192,11 +202,14 @@ class World:
             self.population[cell.name] = cell
         # generate optimized dictionaries for each type
         self.optimize_population()
+        self.ordered=Poscells(self.population)
+
 
     def actualizeWorld(self):
 
         new_borns = []
         self.ticks=(self.ticks+1) % self.maxticks
+        self.ordered=Poscells(self.population)
         for cell in self.population.values():
             """think once more even if cell.isDead(): """
             if self.ticks%cell.ticks==cell.tick:

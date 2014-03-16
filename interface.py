@@ -30,7 +30,7 @@ def update_interface(self):
     for tipo in self.world.tipos:
         self.form['num_'+tipo].value= \
                 '{:>14}'.format(len(self.world.popul_indexs[tipo]))
-    #write data on selected cell
+    #update info data on selected cell
     info=self.form['info']
     if info.widgets!=[] and info.button.value in self.world.population:
         text='';cell=self.world.population[info.button.value]
@@ -43,17 +43,10 @@ def show_info(self,title,text):
     info.addinfo(title,text)
 
 def create_widgets(self):
-    '''creates an returns GUI structure a la DOM, that will be asigned to
-    self.container from wich startgui can start its painting
-    as startgui is called from the parent class sometimes we wont have al
-    the atributes as we need, so is useful to call it again at the end
-    of the init of the new class'''
+    '''creates and returns GUI structure a la DOM, that will be asigned to
+    self.container from wich startgui can start its painting.'''
 
     g=self.gui # to abreviate the use
-    #controlling we have al the atributes we need
-    for attr in ['fps','tipos']:
-        if not hasattr(self,attr):
-            return g.Container(align=-1,valign=-1)
     def gui_speed(slider):
         self.fps=slider.value
         self.form['label_speed'].value='Speed:{:>4}'.format(self.fps)
@@ -68,7 +61,7 @@ def create_widgets(self):
         self.world.population,self.world.deads = {},{}
         self.world.populate(self.form['quantity'].value)
 
-    # try to be able to reescale the widgets
+    # in future try to be able to reescale the widgets
     table=g.Table(name='tabla')
     fg = BLACK
 
@@ -84,11 +77,10 @@ def create_widgets(self):
     e = g.HSlider(self.fps,1,50,size=10,width=100,height=16,name='speed')
     e.connect(g.CHANGE, gui_speed, e)
     table.td(e, align=-1)
-
     table.tr()
     table.td(g.Container(height=5,size=10))
-
     table.tr()
+
     e=g.Button('Restart', name='restart',size=10)
     e.connect(g.CLICK, gui_restart, e)
     table.td(e)

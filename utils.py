@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
+from functools import wraps
 def bound_func(instance,func):
     '''quick temporal method to bound external functions to methods
     still needs wrapping, probaly use a class, etc..), and try to learn
     exactly what python does
     '''
+    @wraps(func)
     def nf(*args,**kargs):
         return func(instance,*args,**kargs)
     return nf

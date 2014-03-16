@@ -31,4 +31,4 @@ hecho YJ- Crear un fichero con BUGS, de momento funcionamiento del gui sobre tod
 
 hecho YJ- Comprobar que las celulas hijas se incorporen correctamente en las tablas de optimizacion y demas.
 
-
+  -probar doctext y despues elegir si queremos este o unitest, nose o lo que sea

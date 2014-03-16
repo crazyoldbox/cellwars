@@ -68,6 +68,7 @@ class Starter(Skeleton):
             if foundcell:
                 self.show_info(foundcell.name,'will update_interface')
                 # or if isnt downloaded interface.show_info(self,title,text)
+                print([e.name for e in self.world.ordered.inrange(\
+                      foundcell.pos,foundcell.view_range)])
 
-
-s = Starter(DIM_WIN,TYPES,CELL_NUM,FPS).start()
+Starter(DIM_WIN,TYPES,CELL_NUM,FPS).start()

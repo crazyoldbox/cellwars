@@ -32,7 +32,7 @@ class Animate():
            images to 0.'''
 
         location = self.loc + self.object.status
-        animation_list = os.listdir(location)
+        animation_list = [a for a in os.listdir(location) if a.endswith('.png')]
         animation_list.sort()
         self.images = animation_list
         self.len_images = len(animation_list)
