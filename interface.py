@@ -66,6 +66,20 @@ def create_widgets(self):
         self.world.population,self.world.deads = {},{}
         self.world.populate(self.form['quantity'].value)
 
+    def gui_pyshell(_button):
+        import code
+        import readline
+        import rlcompleter
+        vars = globals()
+        vars.update(locals())
+        readline.set_completer(rlcompleter.Completer(vars).complete)
+        readline.parse_and_bind("tab: complete")
+        shell = code.InteractiveConsole(vars)
+        shell.interact()
+
+        self.world.population,self.world.deads = {},{}
+        self.world.populate(self.form['quantity'].value)
+
     # in future try to be able to reescale the widgets
     table=g.Table(name='tabla')
     fg = BLACK
@@ -109,6 +123,11 @@ def create_widgets(self):
     table.tr()
     e=g.Button('Collisions', name='collisions',size=10)
     e.connect(g.CLICK, gui_collisions, e)
+    table.td(e)
+
+    table.tr()
+    e=g.Button('Py shell', name='pyshell',size=10)
+    e.connect(g.CLICK, gui_pyshell, e)
     table.td(e)
 
     table.tr()

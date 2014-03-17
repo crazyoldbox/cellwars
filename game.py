@@ -84,4 +84,4 @@ class Starter(Skeleton):
                 #print([e.name for e in self.world.population.inrange(\
                 #      foundcell.pos,foundcell.view_range)])
 DIM_WIN=(1000,800)
-Starter(DIM_WIN,TYPES,CELL_NUM,FPS).start(collisions=False,timeit=False)
+s=Starter(DIM_WIN,TYPES,CELL_NUM,FPS).start(collisions=False,timeit=False)

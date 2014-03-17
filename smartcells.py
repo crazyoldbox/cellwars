@@ -113,11 +113,6 @@ class Poscells(dict):
         delete={cell for cell in self.cells if func(cell)}
         self.cells-=delete
         self.deleted |=delete
-        '''
-        for cell in selec:
-            self.cells.remove(cell)
-            self.deleted.add(cell)
-        '''
 
     def inrange(self,pos,rango,exclude=False,First=False,circle=False):
         if not exclude:
