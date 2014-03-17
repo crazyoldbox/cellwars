@@ -53,9 +53,14 @@ def create_widgets(self):
 
     def gui_quantity(slider):
         self.form['label_qtty'].value='Qtty:{:>5}'.format(slider.value)
+
     def gui_run(_button):
         self.game_running= not self.game_running
         _button.value='Pause' if self.game_running else 'Start'
+
+    def gui_collisions(_button):
+        self.world.collisions= not self.world.collisions
+        _button.value='No Collisions' if self.world.collisions else 'Collisions'
 
     def gui_restart(_button):
         self.world.population,self.world.deads = {},{}
@@ -79,8 +84,8 @@ def create_widgets(self):
     table.td(e, align=-1)
     table.tr()
     table.td(g.Container(height=5,size=10))
-    table.tr()
 
+    table.tr()
     e=g.Button('Restart', name='restart',size=10)
     e.connect(g.CLICK, gui_restart, e)
     table.td(e)
@@ -93,12 +98,19 @@ def create_widgets(self):
     e =g.HSlider(cant,1,999,size=10,width=100,height=16,name='quantity')
     e.connect(g.CHANGE, gui_quantity, e)
     table.td(e,align=-1)
+
     for tipo in self.tipos:
         table.tr()
         color=self.tipos[tipo][1]
         cant='{:>14}'.format(len(self.world.population._types[tipo]))
         table.td(g.Label(value=cant,color=color,name='num_'+tipo,\
                             size=10),align=-1)
+
+    table.tr()
+    e=g.Button('Collisions', name='collisions',size=10)
+    e.connect(g.CLICK, gui_collisions, e)
+    table.td(e)
+
     table.tr()
     info=ShowInfo(width=100,name='info')
     table.td(info)

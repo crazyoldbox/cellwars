@@ -10,6 +10,7 @@ class Starter(Skeleton):
         wrldsize=(size[0]-100-CELL_W/2,size[1]) #-right_GUI-sprite_width/2
         self.world = Objects.World(wrldsize,tipos=list(self.tipos.keys()))
         self.world.gamengine=self
+        self.world.collisions=True
         self.world.populate(num_cells)
         self.preload_types()
         self.add_functions()
@@ -80,4 +81,4 @@ class Starter(Skeleton):
                 #print([e.name for e in self.world.population.inrange(\
                 #      foundcell.pos,foundcell.view_range)])
 
-Starter(DIM_WIN,TYPES,CELL_NUM,FPS).start()
+Starter(DIM_WIN,TYPES,CELL_NUM,FPS).start(collisions=False,timeit=False)

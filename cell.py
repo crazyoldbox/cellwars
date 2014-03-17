@@ -177,8 +177,6 @@ class World:
         self.size = size
         self.population=Poscells(self)
         # auxiliary data
-        self.popul_indexs={}
-        self.dead,self.deads=[],{}
         self.ticks=0; self.maxticks=10000; self.thinktick=1
 
     def populate(self, numcells=10, clean=True):
@@ -188,7 +186,7 @@ class World:
            cell randomly from the world tipos list. The keys have a tipo+int
            format(e.g "Blue12"). '''
         if clean:
-            self.population=Poscells(self);self.deads = {}
+            self.population=Poscells(self)
         num_ini=len(self.population.cells)+len(self.population.deleted)
         for num in range(num_ini,num_ini+numcells):
             tipo = random.choice(self.tipos)
@@ -218,10 +216,9 @@ class World:
         for cell in self.population.cells:
             """act once more even if cell.isDead(): """
             cell.primitiveIS()
-        self.population.refresh()
-
         self.population.deleteByFunc(Cell.isDead)
         self.reproduction(new_borns)
+        self.population.refresh()
 
     def reproduction(self,new_borns):
         '''We receive a list with all the sons. Then we put them in population.

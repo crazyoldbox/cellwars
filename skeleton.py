@@ -36,11 +36,14 @@ class Skeleton(object):
         self.handled_events=[]
         #Utils
         #### Adding an external function
+        self.timeit=False
         self.bound_func=utils.bound_func
 
-    def start(self,fps=None):
+    def start(self,fps=None,collisions=False,timeit=False):
         self.add_events()
         self.startgui()
+        self.world.collisions=collisions
+        self.timeit=timeit
         self.mainLoop(fps=fps)
 
     def handle_event_quit(self,event):
@@ -75,39 +78,42 @@ class Skeleton(object):
         self.window_running = True
 
         while self.window_running:
-            t1=time.process_time()
+            t1=time.perf_counter()
             self.gamengine.display.set_caption("FPS: %i" % self.clock.get_fps())
             self.screen.fill(self.fill)
             self.handleEvents()
-            t2=time.process_time()
+            t2=time.perf_counter()
             self.update()
-            t3=time.process_time()
+            t3=time.perf_counter()
             self.draw()
-            t4=time.process_time()
+            t4=time.perf_counter()
             self.gamengine.display.flip()
             self.clock.tick(self.fps)
-            t5=time.process_time()
-            #print ('loop:ini{}update{}draw{}fin{}'.format(t2-t1,t3-t2,t4-t3,t5-t4))
+            t5=time.perf_counter()
+            if self.timeit:
+                print ('loop:ini{}update{}draw{}fin{}'.format(t2-t1,t3-t2,t4-t3,t5-t4))
 
         if not self.window_running:
             self.gamengine.quit()
 
     def update(self):
-        t1=time.process_time()
+        t1=time.perf_counter()
         if self.game_running:
             self.update_objects()
-        t2=time.process_time()
+        t2=time.perf_counter()
         self.update_gui()
-        t3=time.process_time()
-        #print ('update:obj{}gui{}'.format(t2-t1,t3-t2))
+        t3=time.perf_counter()
+        if self.timeit:
+            print ('update:obj{}gui{}'.format(t2-t1,t3-t2))
 
     def draw(self):
-        t1=time.process_time()
+        t1=time.perf_counter()
         self.draw_objects()
-        t2=time.process_time()
+        t2=time.perf_counter()
         self.draw_gui()
-        t3=time.process_time()
-        #print ('draw:objects{}gui{}'.format(t2-t1,t3-t2))
+        t3=time.perf_counter()
+        if self.timeit:
+            print ('draw:objects{}gui{}'.format(t2-t1,t3-t2))
 
     def update_objects(self):
         pass

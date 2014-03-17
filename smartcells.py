@@ -59,13 +59,18 @@ class Poscells(dict):
         self._yn=[e[3] for e in _y]
 
     def __setitem__(self,key,value):
-        # the key shouldnt exist but im not controlling
+        # the key shouldnt exist im condidering new but im not controlling
         # also is a light asignment im not actualizing position index
         #il leave it for a refresh
         super(Poscells, self).__setitem__(key,value)
         self.cells.add(value)
 
-
+    def __delitem__(self,key):
+        # the key should exist but im not controlling
+        # also is a light delete im not actualizing position index
+        #il leave it for a refresh
+        self.deleted(self[key])
+        self.cells.remove(self[key])
 
     def add_cel(self,cell):
         if cell not in self.cells:
@@ -97,9 +102,11 @@ class Poscells(dict):
             self.cells.remove(cell)
 
     def deleteByFunc(self,func): # use de func
+        #a soft delete needs refresh to actualize indexex
         selec=set([cell for cell in self.cells if func(cell)])# bounded func only
         for cell in selec:
-            self.del_cel(cell)
+            self.cells.remove(cell)
+            self.deleted.add(cell)
 
     def inrange(self,pos,rango,exclude=False,First=False,circle=False):
         if not exclude:
@@ -108,6 +115,8 @@ class Poscells(dict):
             excl=self._types[exclude]
         else:
             excl= set([exclude])         # is a cell
+            if not self.world.collisions:
+                return set() # deactivating collisions
         x,y= pos
         _ik=bs.bisect_left(self._xk, x-rango)
         _fk=bs.bisect_right(self._xk, x+rango,lo=_ik)
