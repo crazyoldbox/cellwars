@@ -87,7 +87,7 @@ class Skeleton(object):
             self.gamengine.display.flip()
             self.clock.tick(self.fps)
             t5=time.process_time()
-            print ('loop:ini{}update{}draw{}fin{}'.format(t2-t1,t3-t2,t4-t3,t5-t4))
+            #print ('loop:ini{}update{}draw{}fin{}'.format(t2-t1,t3-t2,t4-t3,t5-t4))
 
         if not self.window_running:
             self.gamengine.quit()
@@ -99,7 +99,7 @@ class Skeleton(object):
         t2=time.process_time()
         self.update_gui()
         t3=time.process_time()
-        print ('update:obj{}gui{}'.format(t2-t1,t3-t2))
+        #print ('update:obj{}gui{}'.format(t2-t1,t3-t2))
 
     def draw(self):
         t1=time.process_time()
@@ -107,7 +107,7 @@ class Skeleton(object):
         t2=time.process_time()
         self.draw_gui()
         t3=time.process_time()
-        print ('draw:objects{}gui{}'.format(t2-t1,t3-t2))
+        #print ('draw:objects{}gui{}'.format(t2-t1,t3-t2))
 
     def update_objects(self):
         pass

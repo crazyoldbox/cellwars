@@ -29,17 +29,17 @@ def update_interface(self):
     #write number of cells by type
     for tipo in self.world.tipos:
         self.form['num_'+tipo].value= \
-                '{:>14}'.format(len(self.world.popul_indexs[tipo]))
+                '{:>14}'.format(len(self.world.population._types[tipo]))
     #update info data on selected cell
     info=self.form['info']
     if info.widgets!=[] and info.button.value in self.world.population:
         text='';cell=self.world.population[info.button.value]
-        for attr in ['tipo','armor','hp','dps','sons','energy']:
+        for attr in ['status','armor','hp','dps','sons','energy']:
             text=text+attr+':'+str(getattr(cell,attr))+'\n'
         info.text(text)
 
 def show_info(self,title,text):
-    info=self.form['info'];
+    info=self.form['info']
     info.addinfo(title,text)
 
 def create_widgets(self):
@@ -96,7 +96,7 @@ def create_widgets(self):
     for tipo in self.tipos:
         table.tr()
         color=self.tipos[tipo][1]
-        cant='{:>14}'.format(len(self.world.popul_indexs[tipo]))
+        cant='{:>14}'.format(len(self.world.population._types[tipo]))
         table.td(g.Label(value=cant,color=color,name='num_'+tipo,\
                             size=10),align=-1)
     table.tr()

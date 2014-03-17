@@ -13,6 +13,8 @@ class Starter(Skeleton):
         self.world.populate(num_cells)
         self.preload_types()
         self.add_functions()
+        # asistant various data for user use
+        self.values={}
 
     def add_events(self):
         events=[
@@ -42,7 +44,7 @@ class Starter(Skeleton):
         self.world.actualizeWorld()
 
     def draw_objects(self):
-        for cell in self.world.population.values():
+        for cell in self.world.population.cells:
 
             # Paints health and energy bar
             self.gamengine.draw.line(self.screen,RED,cell.pos-(CELL_W/2,15),
@@ -55,20 +57,27 @@ class Starter(Skeleton):
 
             sprite = cell.animate.createSprite(self.world.ticks)
             self.screen.blit(sprite.image,sprite.rect)
+            if hasattr(cell,'text') and cell.text:
+                self.printText(cell.text,cell.pos)
             #draws any object using its best of pos, dir arguments with
             #self.draw_object(cell,self.tipos[cell.tipo][0])
 
     def click_cell(self, event):
         if event.button==1 and event.pos[0]<self.world.size[0]:
             foundcell=False
-            for cell in self.world.population.values():
+            for cell in self.world.population.cells:
                 if cell.pos.get_distance(event.pos)<15:
                     foundcell=cell
                     break
             if foundcell:
+                if 'infocell' in self.values and self.values['infocell'] \
+                        in self.world.population.cells:
+                    self.values['infocell'].text=''
+                self.values['infocell']=foundcell
+                foundcell.text='****'
                 self.show_info(foundcell.name,'will update_interface')
                 # or if isnt downloaded interface.show_info(self,title,text)
-                print([e.name for e in self.world.ordered.inrange(\
-                      foundcell.pos,foundcell.view_range)])
+                #print([e.name for e in self.world.population.inrange(\
+                #      foundcell.pos,foundcell.view_range)])
 
 Starter(DIM_WIN,TYPES,CELL_NUM,FPS).start()

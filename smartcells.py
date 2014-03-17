@@ -14,34 +14,100 @@
 from operator import itemgetter, attrgetter
 import bisect as bs
 
-class Poscells(object):
+class Poscells(dict):
     '''Trys to create a speedup class to search for cells in positions,
         useful for detect and colisions, also will add consider type of
         cell .
         wondering if is best to reset completely each time actaulize world,
         or just considere de changes, if the changes are small perhaps better
         list.sort than sorted(list)'''
-    def __init__(self, cells):
-        self._dict=cells
-        _mindict=[(e,e.pos.x,e.pos.y) for e in cells.values()]
+    def __init__(self, world):
+        super(Poscells, self).__init__()
+        self.world=world
+        self.cells=set(self.values())
+        self._types={}
+        self.deleted=set()
+        for _type in self.world.tipos:
+            self._types[_type]= set(cell for cell in self.cells \
+                                   if cell.tipo==_type)
+        _mindict=[(e,e.pos.x,e.pos.y,e.name) for e in self.cells]
         _x=sorted (_mindict,key=itemgetter(1))
         _y=sorted (_mindict,key=itemgetter(2))
+        #_k=sorted (_mindict,key=itemgetter(3))
         self._xk=[e[1] for e in _x]
         self._xd=[e[0] for e in _x]
+        self._xn=[e[3] for e in _x]
         self._yk=[e[2] for e in _y]
         self._yd=[e[0] for e in _y]
+        self._yn=[e[3] for e in _y]
 
-    def reset (self,cells):
-        self._dict=cells
-        _mindict=[(e,e.pos.x,e.pos.y) for e in cells.values()]
+    def refresh (self):
+        #self.cells=set(self.values())
+        #self.deleted=set()  revisar tendriamos que vaciar delete
+        for _type in self.world.tipos:
+            self._types[_type]= set(cell for cell in self.cells \
+                                   if cell.tipo==_type)
+        _mindict=[(e,e.pos.x,e.pos.y,e.name) for e in self.cells]
         _x=sorted (_mindict,key=itemgetter(1))
         _y=sorted (_mindict,key=itemgetter(2))
+        #_k=sorted (_mindict,key=itemgetter(3))
         self._xk=[e[1] for e in _x]
         self._xd=[e[0] for e in _x]
+        self._xn=[e[3] for e in _x]
         self._yk=[e[2] for e in _y]
         self._yd=[e[0] for e in _y]
+        self._yn=[e[3] for e in _y]
 
-    def inrange(self,pos,rango):
+    def __setitem__(self,key,value):
+        # the key shouldnt exist but im not controlling
+        # also is a light asignment im not actualizing position index
+        #il leave it for a refresh
+        super(Poscells, self).__setitem__(key,value)
+        self.cells.add(value)
+
+
+
+    def add_cel(self,cell):
+        if cell not in self.cells:
+            self._types[cell.tipo].add(cell)
+            _ik=bs.bisect_left(self._xk, cell.pos[0])
+            self._xk.insert(_ik,cell.pos[0])
+            self._xd.insert(_ik,cell)
+            self._xn.insert(_ik,cell.name)
+            _ik=bs.bisect_left(self._yk, cell.pos[1])
+            self._yk.insert(_ik,cell.pos[1])
+            self._yd.insert(_ik,cell)
+            self._yn.insert(_ik,cell.name)
+            self[cell.name]=cell
+            self.cells.add(cell)
+
+    def del_cel(self,cell):
+        # find it and take it decide if it is frecuent enough to create index
+        if cell in self.cells:
+            self._types[cell.tipo].remove(cell)
+            _ik=self._xn.index(cell.name)
+            self._xk.pop(_ik)
+            self._xd.pop(_ik)
+            self._xn.pop(_ik)
+            _ik=self._yn.index(cell.name)
+            self._yk.pop(_ik)
+            self._yd.pop(_ik)
+            self._yn.pop(_ik)
+            # self.pop(cell.name)# we shouldn delete
+            self.cells.remove(cell)
+
+    def deleteByFunc(self,func): # use de func
+        selec=set([cell for cell in self.cells if func(cell)])# bounded func only
+        for cell in selec:
+            self.del_cel(cell)
+
+    def inrange(self,pos,rango,exclude=False,First=False,circle=False):
+        if not exclude:
+            excl=set()
+        elif type(exclude) is  str: # is the type of cell
+            excl=self._types[exclude]
+        else:
+            excl= set([exclude])         # is a cell
         x,y= pos
         _ik=bs.bisect_left(self._xk, x-rango)
         _fk=bs.bisect_right(self._xk, x+rango,lo=_ik)
@@ -49,23 +115,10 @@ class Poscells(object):
         _ik=bs.bisect_left(self._yk, y-rango)
         _fk=bs.bisect_right(self._yk, y+rango,lo=_ik)
         _sy=set(self._yd[_ik:_fk])
-        return _sx & _sy
+        return (_sx & _sy)-excl
 
-    def add_cel(self,cell):
-        _ik=bs.bisect_left(self._xk, cell.pos[0])
-        self._xk.insert(_ik,cell.pos[0])
-        self._xd.insert(_ik,cell)
-        _ik=bs.bisect_left(self._yk, cell.pos[1])
-        self._yk.insert(_ik,cell.pos[1])
-        self._yd.insert(_ik,cell)
-        self._dict[cell.name]=cell
+        # in future add use if circle=True filter by
+        # (cell.pos.get_distance(pos) < rango)
+        # but then it will make sense to use first parameter
+        # to get only the first one
 
-    def del_cel(self,cell):
-        # find it and take it decide if it is frecuent enough to create index
-        _ik=bs.bisect_left(self._xk, cell.pos[0])
-        self._xk.insert(_ik,cell.pos[0])
-        self._xd.insert(_ik,cell)
-        _ik=bs.bisect_left(self._yk, cell.pos[1])
-        self._yk.insert(_ik,cell.pos[1])
-        self._yd.insert(_ik,cell)
-        self._dict[cell.name]=cell
