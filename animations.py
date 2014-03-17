@@ -33,6 +33,7 @@ class Animate():
 
         location = self.loc + self.object.status
         animation_list = [a for a in os.listdir(location) if a.endswith('.png')]
+        # or import glob; list=glob.glob(location+'/*.png')
         animation_list.sort()
         self.images = animation_list
         self.len_images = len(animation_list)

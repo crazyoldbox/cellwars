@@ -20,8 +20,8 @@ class Cell:
         self.tipo, self.name = tipo,name
         # Relation of the cell with de world
         self.view_range,self.speed = CELL_W*2,CELL_W/4
-        self.pos = V2d([random.random()*world.size[0],
-                        random.random()*world.size[1]])
+        self.pos = V2d([random.random()*self.world.size[0],
+                        random.random()*self.world.size[1]])
         self.dir=V2d([self.speed,0]).rotated(random.randint(0,360))
         # Relation of the cell with other cells
         self.armor, self.hp,self.hp_max = 0,100,100              # defend
@@ -120,13 +120,15 @@ class Cell:
            ??? Could we optimize for attacking to look only in detected??
            Could we use a grid of tiles to simplify detecting proximity or perhaps
            two ordered lists of cells by x and y coordinate+-'''
-        exclude=False if not selective else self.tipo
-
+        excl=False if not selective else self.tipo
+        return self.world.population.inrange(self.pos,rango,exclude=excl)
+        '''
         for e in self.world.population.inrange(self.pos,\
-                                            rango,exclude=self.tipo):
+                                            rango,exclude=excl):
             yield e
             if first:
                 break
+        '''
 
     def attack(self):
         '''We first take away armor points and then go for HP. At the end
@@ -151,22 +153,22 @@ class Cell:
         self.energyMod(10)
         if self.energyCheck():
             self.regenerate()
-            self.detected = [x for x in \
-                self.detect(self.view_range,selective = True,first=True)]
+            self.detected=self.detect(self.view_range,\
+                                      selective = True,first=True)
             if self.detected: #always after de cell even if its killed
-                self.dir=(self.pos-self.detected[0].pos).normalized()*self.speed
+                self.dir=(self.pos-self.detected.pop().pos).normalized()*self.speed
             else:
                 self.dir=V2d([self.speed,0]).rotated(random.randint(0,360))
             # who to attack  cant we try to use the detected list?
-            self.attacking=list(self.detect(self.attack_range,
-                                            selective=True,first=True))
+            self.attacking=self.detect(self.attack_range,
+                                            selective=True,first=False)
 
 
     def primitiveIS(self):
         # Instincts
         if self.energyCheck():
             self.attack()
-            self.move(self.detected[0]) if self.detected else self.move(self.dir)
+            self.move(self.detected.pop()) if self.detected else self.move(self.dir)
             if self.attacking: self.status = 'attack'
 
 class World:
@@ -195,8 +197,8 @@ class World:
             while self.population.inrange(cell.pos,CELL_W,exclude=cell)\
                   and fin:
                 fin-=1
-                cell.pos = V2d([random.random()*world.size[0],
-                        random.random()*world.size[1]])
+                cell.pos = V2d([random.random()*self.size[0],
+                        random.random()*self.size[1]])
             self.population[cell.name] = cell
         # generate optimized dictionaries for each type
         self.population.refresh()

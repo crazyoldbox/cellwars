@@ -66,10 +66,13 @@ class Starter(Skeleton):
     def click_cell(self, event):
         if event.button==1 and event.pos[0]<self.world.size[0]:
             foundcell=False
-            for cell in self.world.population.cells:
+            for cell in self.world.population.inrange(event.pos,15):
+                '''
                 if cell.pos.get_distance(event.pos)<15:
                     foundcell=cell
-                    break
+                '''
+                foundcell=cell
+                break
             if foundcell:
                 if 'infocell' in self.values and self.values['infocell'] \
                         in self.world.population.cells:
@@ -80,5 +83,5 @@ class Starter(Skeleton):
                 # or if isnt downloaded interface.show_info(self,title,text)
                 #print([e.name for e in self.world.population.inrange(\
                 #      foundcell.pos,foundcell.view_range)])
-
+DIM_WIN=(1000,800)
 Starter(DIM_WIN,TYPES,CELL_NUM,FPS).start(collisions=False,timeit=False)

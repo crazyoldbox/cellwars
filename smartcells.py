@@ -44,6 +44,13 @@ class Poscells(dict):
     def refresh (self):
         #self.cells=set(self.values())
         #self.deleted=set()  revisar tendriamos que vaciar delete
+        # so we dont have to go over all new inserted and deleted cells
+        # perhaps amke a temp of inserted and deleted and use only that
+        # to generate the sets of types
+        # also we could try to save in temps the changes in pos to see
+        # ir resorting could be speed up, and so is probable that order
+        # hast change much maybe will be much faster a list.sort than a
+        # sorted (list)
         for _type in self.world.tipos:
             self._types[_type]= set(cell for cell in self.cells \
                                    if cell.tipo==_type)
@@ -103,10 +110,14 @@ class Poscells(dict):
 
     def deleteByFunc(self,func): # use de func
         #a soft delete needs refresh to actualize indexex
-        selec=set([cell for cell in self.cells if func(cell)])# bounded func only
+        delete={cell for cell in self.cells if func(cell)}
+        self.cells-=delete
+        self.deleted |=delete
+        '''
         for cell in selec:
             self.cells.remove(cell)
             self.deleted.add(cell)
+        '''
 
     def inrange(self,pos,rango,exclude=False,First=False,circle=False):
         if not exclude:
