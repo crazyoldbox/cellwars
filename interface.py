@@ -63,22 +63,24 @@ def create_widgets(self):
         _button.value='No Collisions' if self.world.collisions else 'Collisions'
 
     def gui_restart(_button):
-        self.world.population,self.world.deads = {},{}
         self.world.populate(self.form['quantity'].value)
 
     def gui_pyshell(_button):
-        import code
-        import readline
-        import rlcompleter
-        vars = globals()
-        vars.update(locals())
-        readline.set_completer(rlcompleter.Completer(vars).complete)
-        readline.parse_and_bind("tab: complete")
-        shell = code.InteractiveConsole(vars)
-        shell.interact()
-
-        self.world.population,self.world.deads = {},{}
-        self.world.populate(self.form['quantity'].value)
+        def myshell():
+            import code
+            import readline
+            import rlcompleter
+            vars = globals()
+            vars.update(locals())
+            vars['self']=self
+            readline.set_completer(rlcompleter.Completer(vars).complete)
+            readline.parse_and_bind("tab: complete")
+            shell = code.InteractiveConsole(vars)
+            shell.interact('Use self for main object and exit() to close')
+        from threading import Thread
+        #a=Thread(group=None, target=myshell)
+        a=Thread(target=myshell)
+        a.start()
 
     # in future try to be able to reescale the widgets
     table=g.Table(name='tabla')
