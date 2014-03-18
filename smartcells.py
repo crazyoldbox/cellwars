@@ -114,7 +114,7 @@ class Poscells(dict):
         self.cells-=delete
         self.deleted |=delete
 
-    def inrange(self,pos,rango,exclude=False,First=False,circle=False):
+    def inrange(self,pos,rango,exclude=False,first=False,circle=False):
         if not exclude:
             excl=set()
         elif type(exclude) is  str: # is the type of cell
@@ -130,7 +130,10 @@ class Poscells(dict):
         _ik=bs.bisect_left(self._yk, y-rango)
         _fk=bs.bisect_right(self._yk, y+rango,lo=_ik)
         _sy=set(self._yd[_ik:_fk])
-        return (_sx & _sy)-excl
+        result = (_sx & _sy)-excl
+        if result and first:
+            result=set([result.__iter__().__next__()])
+        return result
 
         # in future add use if circle=True filter by
         # (cell.pos.get_distance(pos) < rango)

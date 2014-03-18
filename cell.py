@@ -19,7 +19,7 @@ class Cell:
         self.world = world
         self.tipo, self.name = tipo,name
         # Relation of the cell with de world
-        self.view_range,self.speed = CELL_W*2,CELL_W/4
+        self.view_range,self.speed = CELL_W*4,CELL_W/4
         self.pos = V2d([random.random()*self.world.size[0],
                         random.random()*self.world.size[1]])
         self.dir=V2d([self.speed,0]).rotated(random.randint(0,360))
@@ -32,7 +32,7 @@ class Cell:
         # Relation of the cell with the engine
         self.ticks=12; self.tick=random.randint(0,self.ticks-1)  # refresh rate
         self.text=''                                           # representation
-        self.detected,self.attacking=[],[]                     # auxiliary
+        self.detected,self.attacking={},{}                     # auxiliary
         # Animates taking in account status
         self.status = 'idle'; self.animate = Animate(self)
 
@@ -88,27 +88,28 @@ class Cell:
            Other types of data or no data passed will move randomly '''
 
         if isinstance(data,V2d):
-            if not self.world.population.inrange(self.pos+data,\
-                    CELL_W/2,First=True,exclude=self):
+            if not self.world.population.inrange(\
+             (self.pos+data)%self.world.size,CELL_W,first=False,exclude=self):
                 self.pos+=data
         elif isinstance(data,Cell):
-            #we should not receive a cell
+            #we are doing a distance and a normalitzation lets calculate less
+            # we could divide by distance instead of normalice
             distance=self.pos.get_distance(data.pos)
-            self.dir=-(self.pos-data.pos).normalized()
+            self.dir=(data.pos-self.pos).normalized()
             if self.speed>(distance-CELL_W):
                 self.dir*=(distance-CELL_W)
             else:
                 self.dir*=self.speed
             if not self.world.population.inrange(self.pos+self.dir,\
-                     CELL_W,First=True,exclude=self):
+                     CELL_W,first=False,exclude=self):
                 self.pos+=self.dir
-
         else:
-            print ('error we are suposed to receive a V2d')
-            vdir=V2d([self.speed,0]).rotated(random.randint(0,360))
-            self.pos+=vdir
+            print ('self.move:shouldn arrive here')
+            self.dir=V2d([self.speed,0]).rotated(random.randint(0,360))
+            self.pos+=self.dir
         self.pos%=self.world.size # correct if it goes past one side
-        self.energyMod()
+        #self.energyMod()  do we really need it each iteration we already have
+        # in primitiveAI
         self.status = 'move'
 
 
@@ -121,14 +122,9 @@ class Cell:
            Could we use a grid of tiles to simplify detecting proximity or perhaps
            two ordered lists of cells by x and y coordinate+-'''
         excl=False if not selective else self.tipo
-        return self.world.population.inrange(self.pos,rango,exclude=excl)
-        '''
-        for e in self.world.population.inrange(self.pos,\
-                                            rango,exclude=excl):
-            yield e
-            if first:
-                break
-        '''
+        # its not costrly so for the moment we give all not caring about first
+        return self.world.population.inrange(self.pos,rango,\
+                      first=first,exclude=excl)
 
     def attack(self):
         '''We first take away armor points and then go for HP. At the end
@@ -150,26 +146,37 @@ class Cell:
             then it will move randomly'''
         # Thinking
         # were to move
-        self.energyMod(10)
+        self.energyMod(10) # why do an energy check if you just upgrade it
         if self.energyCheck():
             self.regenerate()
+            self.attacking={}
             self.detected=self.detect(self.view_range,\
-                                      selective = True,first=True)
-            if self.detected: #always after de cell even if its killed
-                self.dir=(self.pos-self.detected.pop().pos).normalized()*self.speed
+                                  selective = True,first=True)
+            if self.detected:
+                self.attacking=self.detect(self.attack_range,
+                                                selective=True,first=True)
+            if self.attacking:
+                self.dir=self.attacking.__iter__().__next__()
+            elif self.detected:
+                self.dir=self.detected.__iter__().__next__()
             else:
                 self.dir=V2d([self.speed,0]).rotated(random.randint(0,360))
-            # who to attack  cant we try to use the detected list?
-            self.attacking=self.detect(self.attack_range,
-                                            selective=True,first=False)
+
 
 
     def primitiveIS(self):
         # Instincts
         if self.energyCheck():
-            self.attack()
-            self.move(self.detected.pop()) if self.detected else self.move(self.dir)
-            if self.attacking: self.status = 'attack'
+
+            # the following line (??) is strange review why we should pass de direction to move
+            # we already have it so if detected has more than one item changes again
+            #passing a cell instead of the direction we already have
+            # it would have kind of sense if we querry self.attacking instead of detected
+            # to move to an attacked cell
+            self.move(self.dir)
+            if self.attacking:
+                self.attack()
+                self.status = 'attack'
 
 class World:
 
@@ -201,7 +208,7 @@ class World:
                         random.random()*self.size[1]])
             self.population[cell.name] = cell
         # generate optimized dictionaries for each type
-        self.population.refresh()
+            self.population.refresh()
 
 
     def actualizeWorld(self):

@@ -3,8 +3,12 @@
 - Refactorizar, refactorizar, refactorizar que con lo del control de gui se ha desmadrado a parches y hay que darle un enfoque global nuevo.
 
 - revisar indicaciones en comentarios (añadir algunas al log) y limpiar comentarios.
+   por ejemplo en cell el uso de energia es algo extraño ya que siempre la cargamos antes de comprobar
 
-- Colisiones entre objetos
+hecho j - Colisiones entre objetos
+          queda pendiente actualizar las posiciones despues de cada celula, ahora solo lo hace despues de cada iteracion del mundo.
+          no seria mucho mas costoso pero si un poco.
+          
 
 hecho Y- Animaciones para objetos. Se ha aplicado un pequeño motor de animaciones. Recibe un objeto y devuelve el sprite 
          correspondiente ya girado. Las animaciones han reducido el rendimiento general. Se ha aplicado una cache como 
@@ -31,4 +35,4 @@ hecho YJ- Crear un fichero con BUGS, de momento funcionamiento del gui sobre tod
 
 hecho YJ- Comprobar que las celulas hijas se incorporen correctamente en las tablas de optimizacion y demas.
 
-  -probar doctext y despues elegir si queremos este o unitest, nose o lo que sea
+  -quizas siguiente version? para testear los programas: probar doctext y despues elegir si queremos este o unitest, nose o lo que sea

@@ -36,6 +36,12 @@ def update_interface(self):
         text='';cell=self.world.population[info.button.value]
         for attr in ['status','armor','hp','dps','sons','energy']:
             text=text+attr+':'+str(getattr(cell,attr))+'\n'
+        text+='detected:\n'
+        for c in cell.detected:
+            text+=c.name+'\n'
+        text+='attack:\n'
+        for c in cell.attacking:
+            text+=c.name+'\n'
         info.text(text)
 
 def show_info(self,title,text):
