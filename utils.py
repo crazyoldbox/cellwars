@@ -61,7 +61,7 @@ class IndexedDict(dict):
         if mainkey in self:
             for key in self.keys:
                 _ik=bs.bisect_left(self.index[key]['index'],value[key])
-                self.index[key]['index'].[_ik]= value[key])
+                self.index[key]['index'][_ik]= value[key]
                 self.index[key]['key'][_ik]=(mainkey, value)
 
                 #or self.updateindex([value[key]],[mainkey,value[key]],key=mainkey,op=list.__setitem__)
@@ -81,7 +81,7 @@ class IndexedDict(dict):
         value=self[mainkey]
         for key in self.keys:
             _ik=bs.bisect_left(self.index[key]['index'],value[key])
-            del self.index[key]['index'].[_ik]
+            del self.index[key]['index'][_ik]
             del self.index[key]['key'][_ik]
 
             #or self.updateindex([],[],key=mainkey,op=list.__delitem__)
@@ -100,3 +100,5 @@ class IndexedDict(dict):
         items=self.index[key]['key'][_ik:_fk]
         return items # [self[item] for item in items]
 
+a=IndexedDict([])
+print(a)
