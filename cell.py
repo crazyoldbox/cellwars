@@ -157,6 +157,7 @@ class Cell:
                                                 selective=True,first=True)
             if self.attacking:
                 self.dir=self.attacking.__iter__().__next__()
+                #slower but could use ..  next(iter(self.attacking))
             elif self.detected:
                 self.dir=self.detected.__iter__().__next__()
             else:

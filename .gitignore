@@ -42,7 +42,7 @@ nosetests.xml
 # temporal wkspace
 *.*~
 #temporal images db
-*.db
+Thumbs.db
 
 #tests directory
 tests

@@ -66,7 +66,7 @@ def create_widgets(self):
 
     def gui_collisions(_button):
         self.world.collisions= not self.world.collisions
-        _button.value='No Collisions' if self.world.collisions else 'Collisions'
+        _button.value='No Collide' if self.world.collisions else 'Collide'
 
     def gui_restart(_button):
         self.world.populate(self.form['quantity'].value)
@@ -129,7 +129,7 @@ def create_widgets(self):
                             size=10),align=-1)
 
     table.tr()
-    e=g.Button('Collisions', name='collisions',size=10)
+    e=g.Button('No Collide', name='collisions',size=10)
     e.connect(g.CLICK, gui_collisions, e)
     table.td(e)
 
