@@ -55,12 +55,6 @@ class Cell:
             name = self.name + '*' + str(self.sons)
             son = Cell(self.world, self.tipo, name)
             son.pos = self.pos + (0,CELL_W)
-            fin=5
-            while self.world.population.inrange(son.pos,CELL_W,exclude=son)\
-                 and fin:
-                fin-=1
-                son.pos = V2d([random.random()*self.world.size[0],
-                        random.random()*self.world.size[1]])
             return son
         else:
             return None
@@ -110,6 +104,7 @@ class Cell:
         self.pos%=self.world.size # correct if it goes past one side
         #self.energyMod()  do we really need it each iteration we already have
         # in primitiveAI
+        self.world.population.refreshItem(self)
         self.status = 'move'
 
 
@@ -181,7 +176,7 @@ class Cell:
 
 class World:
 
-    def __init__(self,size, tipos = ['Blue','Red']):
+    def __init__(self,size=(800,600), tipos = ['Blue','Red']):
 
         self.tipos = tipos
         self.size = size
@@ -201,15 +196,18 @@ class World:
         for num in range(num_ini,num_ini+numcells):
             tipo = random.choice(self.tipos)
             cell=Cell(self, tipo,tipo + str(num))
-            fin=10
+            print (cell.name,cell.pos.x,cell.pos.y)
+            fin=10 # only try to insert in a free space
             while self.population.inrange(cell.pos,CELL_W,exclude=cell)\
                   and fin:
                 fin-=1
                 cell.pos = V2d([random.random()*self.size[0],
                         random.random()*self.size[1]])
-            self.population[cell.name] = cell
-        # generate optimized dictionaries for each type
-            self.population.refresh()
+            if fin:
+                self.population[cell.name] = cell
+            # if not fin then no space for the cell, in future try to find
+            # other way like first dividing al space in square of CELL_W, put
+            # them on al scrambled list and pop the positions
 
 
     def actualizeWorld(self):
@@ -217,6 +215,7 @@ class World:
         new_borns = []
         self.ticks=(self.ticks+1) % self.maxticks
         for cell in self.population.cells:
+            print('*******actualize:',cell.name)
             """think once more even if cell.isDead(): """
             if self.ticks%cell.ticks==cell.tick:
                 cell.primitiveAI()
@@ -226,13 +225,20 @@ class World:
         for cell in self.population.cells:
             """act once more even if cell.isDead(): """
             cell.primitiveIS()
-        self.population.deleteByFunc(Cell.isDead)
         self.reproduction(new_borns)
-        self.population.refresh()
+        self.population.deleteByFunc(Cell.isDead)
+        #self.population.refresh()
 
     def reproduction(self,new_borns):
         '''We receive a list with all the sons. Then we put them in population.
            finally we optimeze population'''
 
         for son in new_borns:
-            self.population[son.name] = son
+            fin=5
+            while self.population.inrange(son.pos,CELL_W,exclude=son)\
+                 and fin:
+                fin-=1
+                son.pos = V2d([random.random()*self.size[0],
+                        random.random()*self.size[1]])
+            if fin: # if found space
+                self.population[son.name] = son

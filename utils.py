@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from functools import wraps
+from operator import itemgetter, attrgetter
+import bisect as bs
+
 def bound_func(instance,func):
     '''quick temporal method to bound external functions to methods
     still needs wrapping, probaly use a class, etc..), and try to learn
@@ -23,17 +26,15 @@ class bound_descriptor:
     def __get__(self):
         print ('descriptor for:',self.func)
 
-from operator import itemgetter, attrgetter
-import bisect as bs
 
 class IndexedDict(dict):
     '''On progress A multi indexed dictionary, with sequential indexes
        anyways thats kind of a data base so better look up for something
        similar and dont reinvent the wheel'''
-    def __init__(self, keys):
+    def __init__(self, keys=[]):
         super(IndexedDict, self).__init__()
-        self.index={}
         self.keys=keys
+        self.index={key:{} for key in self.keys}
         self.refresh()
 
     def updateindex (self,*args,key=None,op=None):
@@ -45,7 +46,6 @@ class IndexedDict(dict):
         op(*argum)
 
     def refresh (self):
-        self.index={}
         # for each main key of the dictionary we store the position of each key
         mindict=[val for val in self.items()]
         for key in self.keys:  # create an ordered list of items for each key
@@ -60,15 +60,17 @@ class IndexedDict(dict):
         so perhaps is cheaper to do a total refresh'''
         if mainkey in self:
             for key in self.keys:
-                _ik=bs.bisect_left(self.index[key]['index'],value[key])
-                self.index[key]['index'][_ik]= value[key]
+                val=getattr(value,key)
+                _ik=bs.bisect_left(self.index[key]['index'],val)
+                self.index[key]['index'][_ik]= val
                 self.index[key]['key'][_ik]=(mainkey, value)
 
                 #or self.updateindex([value[key]],[mainkey,value[key]],key=mainkey,op=list.__setitem__)
         else:
             for key in self.keys:
-                _ik=bs.bisect_left(self.index[key]['index'],value[key])
-                self.index[key]['index'].insert(_ik, value[key])
+                val=getattr(value,key)
+                _ik=bs.bisect_left(self.index[key]['index'],val)
+                self.index[key]['index'].insert(_ik, val)
                 self.index[key]['key'].insert(_ik, (mainkey,value))
 
                 #or self.updateindex([value[key]],[mainkey,value[key]],key=mainkey,op=list.insert)
@@ -80,7 +82,8 @@ class IndexedDict(dict):
         so perhaps is cheaper to do a total refresh'''
         value=self[mainkey]
         for key in self.keys:
-            _ik=bs.bisect_left(self.index[key]['index'],value[key])
+            val=getattr(value,key)
+            _ik=bs.bisect_left(self.index[key]['index'],val)
             del self.index[key]['index'][_ik]
             del self.index[key]['key'][_ik]
 
@@ -100,5 +103,5 @@ class IndexedDict(dict):
         items=self.index[key]['key'][_ik:_fk]
         return items # [self[item] for item in items]
 
-a=IndexedDict([])
-print(a)
+
+a=IndexedDict()
