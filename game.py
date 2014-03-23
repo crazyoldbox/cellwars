@@ -45,7 +45,7 @@ class Starter(Skeleton):
         self.world.actualizeWorld()
 
     def draw_objects(self):
-        for cell in self.world.population.cells:
+        for cell in self.world.population.values():
 
             # Paints health and energy bar
             self.gamengine.draw.line(self.screen,RED,cell.pos-(CELL_W/2,15),
@@ -83,5 +83,6 @@ class Starter(Skeleton):
                 # or if isnt downloaded interface.show_info(self,title,text)
                 #print([e.name for e in self.world.population.inrange(\
                 #      foundcell.pos,foundcell.view_range)])
-DIM_WIN=(1000,800)
-s=Starter(DIM_WIN,TYPES,CELL_NUM,FPS).start(collisions=True,timeit=False)
+if __name__=='__main__':
+    DIM_WIN=(1000,800)
+    s=Starter(DIM_WIN,TYPES,CELL_NUM,FPS).start(collisions=True,timeit=False)

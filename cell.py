@@ -82,9 +82,7 @@ class Cell:
            Other types of data or no data passed will move randomly '''
 
         if isinstance(data,V2d):
-            if not self.world.population.inrange(\
-             (self.pos+data)%self.world.size,CELL_W,first=False,exclude=self):
-                self.pos+=data
+            self.dir=data
         elif isinstance(data,Cell):
             #we are doing a distance and a normalitzation lets calculate less
             # we could divide by distance instead of normalice
@@ -94,17 +92,20 @@ class Cell:
                 self.dir*=(distance-CELL_W)
             else:
                 self.dir*=self.speed
-            if not self.world.population.inrange(self.pos+self.dir,\
-                     CELL_W,first=False,exclude=self):
-                self.pos+=self.dir
         else:
             print ('self.move:shouldn arrive here')
             self.dir=V2d([self.speed,0]).rotated(random.randint(0,360))
-            self.pos+=self.dir
-        self.pos%=self.world.size # correct if it goes past one side
-        #self.energyMod()  do we really need it each iteration we already have
-        # in primitiveAI
-        self.world.population.refreshItem(self)
+        newpos=(self.pos+self.dir)%self.world.size
+        if not self.world.population.inrange(newpos,CELL_W,first=False,\
+                                                          exclude=self):
+            self.pos=newpos
+            #self.energyMod()  do we really need it each iteration we already have
+            # in primitiveAI
+            self.world.population.refreshItem(self)
+        else:
+            a=self.world.population.inrange(newpos,CELL_W,first=False,\
+                                                          exclude=self).__iter__().__next__()
+
         self.status = 'move'
 
 
@@ -116,8 +117,7 @@ class Cell:
            ??? Could we optimize for attacking to look only in detected??
            Could we use a grid of tiles to simplify detecting proximity or perhaps
            two ordered lists of cells by x and y coordinate+-'''
-        excl=False if not selective else self.tipo
-        # its not costrly so for the moment we give all not caring about first
+        excl=self if not selective else self.tipo
         return self.world.population.inrange(self.pos,rango,\
                       first=first,exclude=excl)
 
@@ -192,11 +192,10 @@ class World:
            format(e.g "Blue12"). '''
         if clean:
             self.population=Poscells(self)
-        num_ini=len(self.population.cells)+len(self.population.deleted)
+        num_ini=len(self.population)
         for num in range(num_ini,num_ini+numcells):
             tipo = random.choice(self.tipos)
             cell=Cell(self, tipo,tipo + str(num))
-            print (cell.name,cell.pos.x,cell.pos.y)
             fin=10 # only try to insert in a free space
             while self.population.inrange(cell.pos,CELL_W,exclude=cell)\
                   and fin:
@@ -214,16 +213,13 @@ class World:
 
         new_borns = []
         self.ticks=(self.ticks+1) % self.maxticks
-        for cell in self.population.cells:
-            print('*******actualize:',cell.name)
-            """think once more even if cell.isDead(): """
+        for cell in self.population.values():
             if self.ticks%cell.ticks==cell.tick:
                 cell.primitiveAI()
                 son=cell.reproduce()
                 if son:
                     new_borns.append(son)
-        for cell in self.population.cells:
-            """act once more even if cell.isDead(): """
+        for cell in self.population.values():
             cell.primitiveIS()
         self.reproduction(new_borns)
         self.population.deleteByFunc(Cell.isDead)
