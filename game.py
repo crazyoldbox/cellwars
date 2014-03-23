@@ -2,6 +2,8 @@ from skeleton import Skeleton
 from constants import *
 import cell as Objects
 import interface
+import random
+from vec2d import vec2d as V2d
 
 class Starter(Skeleton):
     def __init__(self, size=(800,800), types={'blue':BLUE},num_cells=10,fps=0):
@@ -75,14 +77,23 @@ class Starter(Skeleton):
                 break
             if foundcell:
                 if 'infocell' in self.values and self.values['infocell'] \
-                        in self.world.population.cells:
+                        in self.world.population.values():
                     self.values['infocell'].text=''
                 self.values['infocell']=foundcell
-                foundcell.text='****'
+                foundcell.text='spy'
                 self.show_info(foundcell.name,'will update_interface')
                 # or if isnt downloaded interface.show_info(self,title,text)
                 #print([e.name for e in self.world.population.inrange(\
                 #      foundcell.pos,foundcell.view_range)])
+            elif not self.world.population.inrange(event.pos,CELL_W):
+                tipo =random.Random().choice(self.world.tipos)
+                population=self.world.population
+                num=len(population)+len(population.deleted)+1
+                cell=Objects.Cell(self.world, tipo,tipo + str(num))
+                cell.pos=V2d(event.pos)
+                self.world.population[cell.name]=cell
+
+
 if __name__=='__main__':
     DIM_WIN=(1000,800)
     s=Starter(DIM_WIN,TYPES,CELL_NUM,FPS).start(collisions=True,timeit=False)

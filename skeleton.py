@@ -16,6 +16,7 @@ class Skeleton(object):
         #game inicialitzations
         self.window_running = False
         self.game_running = False
+        self.volume=50
         #pygame
         self.gamengine=pygame
         self.gamengine.init()

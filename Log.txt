@@ -6,8 +6,8 @@
    por ejemplo en cell el uso de energia es algo extraño ya que siempre la cargamos antes de comprobar
 
 hecho j - Colisiones entre objetos
-          queda pendiente actualizar las posiciones despues de cada celula, ahora solo lo hace despues de cada iteracion del mundo.
-          no seria mucho mas costoso pero si un poco.
+          ya actualiza las posiciones despues de cada celula, en vez de despues de cada iteracion del mundo.
+          Por tanto es algo mas costoso y quiza no compensa el cambio. Siempre se puede volver al estado anterior.
           
 
 hecho Y- Animaciones para objetos. Se ha aplicado un pequeño motor de animaciones. Recibe un objeto y devuelve el sprite 
@@ -19,7 +19,10 @@ hecho Y- Animaciones para objetos. Se ha aplicado un pequeño motor de animacion
   habria que poder identificarlo(Ahora lo hago a pelo con Cell). Tmb habria que cambiar la velocidad de la animacion segun  
   la animacion de la que se trate!
 
-- Dibujar las celulas/bots muertas para que los demas se las puedan comer y ganar energia
+?- Dibujar las celulas/bots muertas para que los demas se las puedan comer y ganar energia
+   ?? ok pero se supone que cuando las matan el atacante se da un paseo y vuelve ;) o continua machacando y se alimenta,
+    de que se alimenta dela energia que le queda,...?,..algo fijo,...??
+    De momento a nivel grafico las dejo que las ataquen durante 10 turnos y las muestro diciendo zzzzz
 
 hecho j- Cuando clickas una celula te muestra en el GUIla info con un boton para plegarlo.
          mejorable pero primera version para salir del paso
@@ -28,11 +31,18 @@ hecho YJ- Crear un fichero con BUGS, de momento funcionamiento del gui sobre tod
           que es algo incompleta la implementacion base.
 
 - Insertar sonidos( Explosiones, Ataques, Musica)
+     ?? en funcion de status de bots u otros elementos
 
-- Insertar botones para poner/quitar musica
+hecho J - Insertar botones para poner/quitar musica
+ he puesto un slider con volumen de 0 a 100, por defecto self.volume=50, ya lo usaremos para fijar el volumen
 
-- Poder insertar celula/bot con el mouse donde se quiera.
+hecho +- J - Poder insertar celula/bot con el mouse donde se quiera.
+               De momento a pelo si hay celula debajo la selecciona si no hay nada pone una nueva. En el futuro quizas
+             menu contextual boton derecho o configurar antes desde gui?
 
 hecho YJ- Comprobar que las celulas hijas se incorporen correctamente en las tablas de optimizacion y demas.
 
   -quizas siguiente version? para testear los programas: probar doctext y despues elegir si queremos este o unitest, nose o lo que sea
+
+hecho J - Temporalmente he hecho un shell para que puedas consultar estado variables mientras continuas jugando. 
+    Lo ideal es arrancar entonces desde idle.

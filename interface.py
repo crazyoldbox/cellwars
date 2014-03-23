@@ -60,6 +60,10 @@ def create_widgets(self):
     def gui_quantity(slider):
         self.form['label_qtty'].value='Qtty:{:>5}'.format(slider.value)
 
+    def gui_volume(slider):
+        self.form['label_volume'].value='Volume:{:>3}'.format(slider.value)
+        self.volume=slider.value
+
     def gui_run(_button):
         self.game_running= not self.game_running
         _button.value='Pause' if self.game_running else 'Start'
@@ -127,6 +131,19 @@ def create_widgets(self):
         cant='{:>14}'.format(len(self.world.population._types[tipo]))
         table.td(g.Label(value=cant,color=color,name='num_'+tipo,\
                             size=10),align=-1)
+    table.tr()
+    table.td(g.Container(height=5,size=10))
+
+    table.tr()
+    table.td(g.Label('Volume:{:>3}'.format(self.volume),color=fg,\
+              name='label_volume',size=10),align=-1)
+    table.tr()
+    e =g.HSlider(self.volume,0,100,size=10,width=100,height=16,name='volume')
+    e.connect(g.CHANGE, gui_volume, e)
+    table.td(e,align=-1)
+
+    table.tr()
+    table.td(g.Container(height=5,size=10))
 
     table.tr()
     e=g.Button('No Collide', name='collisions',size=10)

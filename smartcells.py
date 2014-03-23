@@ -20,10 +20,11 @@ class Poscells(IndexedDict):
         wondering if is best to reset completely each time actaulize world,
         or just considere de changes, if the changes are small perhaps better
         list.sort than sorted(list)'''
-    def __init__(self, world,*args):
+    def __init__(self, *args,world=None,delay=False):
         keys=['pos.x','pos.y']
         self.world=world
         super(Poscells, self).__init__(*args,keys=keys)
+        self.deleted=set()
         self._types={}
         for _type in self.world.tipos:
             self._types[_type]= set(cell for cell in self.values() \
@@ -49,9 +50,10 @@ class Poscells(IndexedDict):
         self[value.name]=value
 
     def deleteByFunc(self,func): # use de func
-        delete=[val for val in self.items() if func(val[1])]
-        for key,cell in delete:
-            del self[key]
+        delete=[val for val in self.values() if func(val)]
+        self.deleted.update(delete)
+        for cell in delete:
+            del self[cell.name]
 
     def inrange(self,pos,rango,exclude=False,first=False,circle=False):
         if not exclude:

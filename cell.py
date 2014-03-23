@@ -80,21 +80,20 @@ class Cell:
            boundery crossings. Data is normally a V2d vector, but it wiil also
            accept a Cell object considering you want to move towards it.
            Other types of data or no data passed will move randomly '''
-
-        if isinstance(data,V2d):
-            self.dir=data
-        elif isinstance(data,Cell):
-            #we are doing a distance and a normalitzation lets calculate less
-            # we could divide by distance instead of normalice
-            distance=self.pos.get_distance(data.pos)
-            self.dir=(data.pos-self.pos).normalized()
+        obj=None
+        if data: # if we want to forcefull move a cell
+            self.pos=data
+        if self.attacking:
+            obj=next(iter(self.attacking))
+        elif self.detected:
+            obj=next(iter(self.detected))
+        if obj:
+            distance=self.pos.get_distance(obj.pos)
+            self.dir=(obj.pos-self.pos).normalized()
             if self.speed>(distance-CELL_W):
                 self.dir*=(distance-CELL_W)
             else:
                 self.dir*=self.speed
-        else:
-            print ('self.move:shouldn arrive here')
-            self.dir=V2d([self.speed,0]).rotated(random.randint(0,360))
         newpos=(self.pos+self.dir)%self.world.size
         if not self.world.population.inrange(newpos,CELL_W,first=False,\
                                                           exclude=self):
@@ -102,10 +101,6 @@ class Cell:
             #self.energyMod()  do we really need it each iteration we already have
             # in primitiveAI
             self.world.population.refreshItem(self)
-        else:
-            a=self.world.population.inrange(newpos,CELL_W,first=False,\
-                                                          exclude=self).__iter__().__next__()
-
         self.status = 'move'
 
 
@@ -150,14 +145,8 @@ class Cell:
             if self.detected:
                 self.attacking=self.detect(self.attack_range,
                                                 selective=True,first=True)
-            if self.attacking:
-                self.dir=self.attacking.__iter__().__next__()
-                #slower but could use ..  next(iter(self.attacking))
-            elif self.detected:
-                self.dir=self.detected.__iter__().__next__()
             else:
                 self.dir=V2d([self.speed,0]).rotated(random.randint(0,360))
-
 
 
     def primitiveIS(self):
@@ -169,7 +158,7 @@ class Cell:
             #passing a cell instead of the direction we already have
             # it would have kind of sense if we querry self.attacking instead of detected
             # to move to an attacked cell
-            self.move(self.dir)
+            self.move()
             if self.attacking:
                 self.attack()
                 self.status = 'attack'
@@ -180,7 +169,7 @@ class World:
 
         self.tipos = tipos
         self.size = size
-        self.population=Poscells(self)
+        self.population=Poscells(world=self)
         # auxiliary data
         self.ticks=0; self.maxticks=10000; self.thinktick=1
 
@@ -191,7 +180,7 @@ class World:
            cell randomly from the world tipos list. The keys have a tipo+int
            format(e.g "Blue12"). '''
         if clean:
-            self.population=Poscells(self)
+            self.population=Poscells(world=self)
         num_ini=len(self.population)
         for num in range(num_ini,num_ini+numcells):
             tipo = random.choice(self.tipos)
@@ -214,15 +203,19 @@ class World:
         new_borns = []
         self.ticks=(self.ticks+1) % self.maxticks
         for cell in self.population.values():
-            if self.ticks%cell.ticks==cell.tick:
+            if self.ticks%cell.ticks==cell.tick and not cell.isDead():
                 cell.primitiveAI()
                 son=cell.reproduce()
                 if son:
                     new_borns.append(son)
         for cell in self.population.values():
-            cell.primitiveIS()
+            if not cell.isDead():
+                cell.primitiveIS()
+            else:
+                cell.text='zzzzz'
         self.reproduction(new_borns)
-        self.population.deleteByFunc(Cell.isDead)
+        if self.ticks%10==0: # for the moment 10 turns zombies
+            self.population.deleteByFunc(Cell.isDead)
         #self.population.refresh()
 
     def reproduction(self,new_borns):
