@@ -1,23 +1,22 @@
 # -*- coding: utf-8 -*-
-#import numpy
-# should be faster but we have to install
-# could try to make all operations as matrixes of numpy and then select best
-#for distances
-
-#also try to use binary teers but not implemented directly we have to get from pypi
-# and also slower than dicts
-# how about orderedDict, the problem is to find the next element
-
-# how about using bisect for an index to the dict
+''' Using a specific indexed dictionary, to access by position x,y so we can
+quickly, log n, retrieve a subset by possition.
+Could be made faster by reducing function call overheat, making a C function,
+redesign using numpy,... or triying to use pygame sprite collision functions
+ (probably better the latests).
+ Usage>
+ The same as a dictionary, but having a special function
+ instance.inrange(position,distance)
+ returns a set of elements
+'''
 
 
 from utils import IndexedDict
 
 class Poscells(IndexedDict):
-    '''Trys to create a speedup class to search for cells in positions,
-        useful for detect and colisions, also will add consider type of
-        cell .
-        wondering if is best to reset completely each time actaulize world,
+    '''Trys to create a speedup class (log n) to search for cells in positions,
+        useful in detecting and colisions
+        wondering if is best to reset completely each time actualize world,
         or just considere de changes, if the changes are small perhaps better
         list.sort than sorted(list)'''
     def __init__(self, *args,world=None,delay=False):

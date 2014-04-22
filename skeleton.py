@@ -30,11 +30,13 @@ class Skeleton(object):
         self.gamengine.display.flip()
         #GUI
         self.gui=gui; self.app=gui.App()
-        self.form = gui.Form() # permits fm[n] access to all named widgets
+        self.form = gui.Form() # permits form[name] access to all named widgets
         #GUI inicialitzations
         self.container=None
         #Event management
         self.handled_events=[]
+        # World management
+        self.collisions=True
         #Utils
         #### Adding an external function
         self.timeit=False
@@ -43,7 +45,7 @@ class Skeleton(object):
     def start(self,fps=None,collisions=False,timeit=False):
         self.add_events()
         self.startgui()
-        self.world.collisions=collisions
+        self.collisions=collisions
         self.timeit=timeit
         self.mainLoop(fps=fps)
 

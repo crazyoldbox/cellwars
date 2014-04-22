@@ -2,8 +2,6 @@ from skeleton import Skeleton
 from constants import *
 import cell as Objects
 import interface
-import random
-from vec2d import vec2d as V2d
 
 class Starter(Skeleton):
     def __init__(self, size=(800,800), types={'blue':BLUE},num_cells=10,fps=0):
@@ -12,9 +10,10 @@ class Starter(Skeleton):
         wrldsize=(size[0]-100-CELL_W/2,size[1]) #-right_GUI-sprite_width/2
         self.world = Objects.World(wrldsize,tipos=list(self.tipos.keys()))
         self.world.gamengine=self
-        self.world.collisions=True
+        self.world.collisions=self.collisions
         self.world.populate(num_cells)
         self.preload_types()
+        # add external functions from interface
         self.add_functions()
         # asistant various data for user use
         self.values={}
@@ -30,7 +29,8 @@ class Starter(Skeleton):
         '''adds external functions as bounded methods so dont need to add self
         in calls'''
         # add functions in interface
-        for func in ['show_info','create_widgets','update_interface']:
+        for func in ['show_info','click_cell','create_widgets',
+                                                        'update_interface']:
             setattr(self,func,self.bound_func(self,getattr(interface,func)))
 
     def preload_types(self):
@@ -64,34 +64,6 @@ class Starter(Skeleton):
                 self.printText(cell.text,cell.pos)
             #draws any object using its best of pos, dir arguments with
             #self.draw_object(cell,self.tipos[cell.tipo][0])
-
-    def click_cell(self, event):
-        if event.button==1 and event.pos[0]<self.world.size[0]:
-            foundcell=False
-            for cell in self.world.population.inrange(event.pos,15):
-                '''
-                if cell.pos.get_distance(event.pos)<15:
-                    foundcell=cell
-                '''
-                foundcell=cell
-                break
-            if foundcell:
-                if 'infocell' in self.values and self.values['infocell'] \
-                        in self.world.population.values():
-                    self.values['infocell'].text=''
-                self.values['infocell']=foundcell
-                foundcell.text='spy'
-                self.show_info(foundcell.name,'will update_interface')
-                # or if isnt downloaded interface.show_info(self,title,text)
-                #print([e.name for e in self.world.population.inrange(\
-                #      foundcell.pos,foundcell.view_range)])
-            elif not self.world.population.inrange(event.pos,CELL_W):
-                tipo =random.Random().choice(self.world.tipos)
-                population=self.world.population
-                num=len(population)+len(population.deleted)+1
-                cell=Objects.Cell(self.world, tipo,tipo + str(num))
-                cell.pos=V2d(event.pos)
-                self.world.population[cell.name]=cell
 
 
 if __name__=='__main__':

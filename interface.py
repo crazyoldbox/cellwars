@@ -48,6 +48,34 @@ def show_info(self,title,text):
     info=self.form['info']
     info.addinfo(title,text)
 
+def click_cell(self, event):
+    if event.button==1 and event.pos[0]<self.world.size[0]:
+        foundcell=False
+        for cell in self.world.population.inrange(event.pos,15):
+            '''
+            if cell.pos.get_distance(event.pos)<15:
+                foundcell=cell
+            '''
+            foundcell=cell
+            break
+        if foundcell:
+            if 'infocell' in self.values and self.values['infocell'] \
+                    in self.world.population.values():
+                self.values['infocell'].text=''
+            self.values['infocell']=foundcell
+            foundcell.text='spy'
+            self.show_info(foundcell.name,'will update_interface')
+            # or if isnt downloaded interface.show_info(self,title,text)
+            #print([e.name for e in self.world.population.inrange(\
+            #      foundcell.pos,foundcell.view_range)])
+        elif not self.world.population.inrange(event.pos,CELL_W):
+            tipo =random.Random().choice(self.world.tipos)
+            population=self.world.population
+            num=len(population)+len(population.deleted)+1
+            cell=Objects.Cell(self.world, tipo,tipo + str(num))
+            cell.pos=V2d(event.pos)
+            self.world.population[cell.name]=cell
+
 def create_widgets(self):
     '''creates and returns GUI structure a la DOM, that will be asigned to
     self.container from wich startgui can start its painting.'''
@@ -125,6 +153,7 @@ def create_widgets(self):
     e.connect(g.CHANGE, gui_quantity, e)
     table.td(e,align=-1)
 
+    # quantity by type
     for tipo in self.tipos:
         table.tr()
         color=self.tipos[tipo][1]
