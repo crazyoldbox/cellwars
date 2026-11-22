@@ -9,7 +9,8 @@ BLACK = (0,0,0)
 GREY = (150,150,150)
 
 # files
-IMGDIR = "./data/sprites/"
+from pathlib import Path
+IMGDIR = Path(__file__).resolve().parent / "data" / "sprites"
 IMGTYPE ="png"
 
 # inicialitzations

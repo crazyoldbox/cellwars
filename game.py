@@ -6,9 +6,9 @@ import random
 from vec2d import vec2d as V2d
 
 class Starter(Skeleton):
-    def __init__(self, size=(800,800), types={'blue':BLUE},num_cells=10,fps=0):
+    def __init__(self, size=(800,800), types=None,num_cells=10,fps=0):
         Skeleton.__init__(self, size=size, fill= WHITE,fps=fps)
-        self.tipos= types
+        self.tipos = dict(types) if types is not None else {'blue': BLUE}
         wrldsize=(size[0]-100-CELL_W/2,size[1]) #-right_GUI-sprite_width/2
         self.world = Objects.World(wrldsize,tipos=list(self.tipos.keys()))
         self.world.gamengine=self
@@ -36,7 +36,7 @@ class Starter(Skeleton):
     def preload_types(self):
         for tipo in self.tipos: # preload _type images to speed up draw
             sprite_image = self.gamengine.image.load(\
-                                    IMGDIR+tipo+'.'+IMGTYPE).convert_alpha()
+                                    IMGDIR / (tipo + '.' + IMGTYPE)).convert_alpha()
             color=self.tipos[tipo]
             self.tipos[tipo]=[sprite_image,color]
 
@@ -67,14 +67,12 @@ class Starter(Skeleton):
 
     def click_cell(self, event):
         if event.button==1 and event.pos[0]<self.world.size[0]:
-            foundcell=False
-            for cell in self.world.population.inrange(event.pos,15):
-                '''
-                if cell.pos.get_distance(event.pos)<15:
-                    foundcell=cell
-                '''
-                foundcell=cell
-                break
+            nearby = self.world.population.inrange(event.pos, 15)
+            foundcell = min(
+                (cell for cell in nearby if cell.pos.get_distance(event.pos) <= 15),
+                key=lambda cell: (cell.pos.get_distance(event.pos), cell.name),
+                default=None,
+            )
             if foundcell:
                 if 'infocell' in self.values and self.values['infocell'] \
                         in self.world.population.values():
