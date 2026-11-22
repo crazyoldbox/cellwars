@@ -61,9 +61,7 @@ class Cell:
 
     def energyMod(self,amount = -1):
         '''Modifies energy amount'''
-        if self.energy <= self.energy_max :
-            self.energy += amount
-        else: self.energy = self.energy_max
+        self.energy = max(0, min(self.energy_max, self.energy + amount))
 
     def energyCheck(self):
         return (self.energy > 0)

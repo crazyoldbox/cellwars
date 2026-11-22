@@ -60,19 +60,24 @@ class IndexedDict(dict):
             self.index[key]['val']={val[0]:func(val[1]) for val in \
                                     self.items()}
 
+    def _remove_indexed_item(self, mainkey):
+        item = self[mainkey]
+        for key, _ in self.keys:
+            index = self.index[key]
+            coordinate = index['val'].pop(mainkey)
+            start = bs.bisect_left(index['index'], coordinate)
+            stop = bs.bisect_right(index['index'], coordinate, lo=start)
+            position = index['key'].index(item, start, stop)
+            del index['index'][position]
+            del index['key'][position]
+
     def __setitem__(self,mainkey,value):
         '''If the item already exists we delete it before adding the new one
         so the indexes are already updated when we insert in each index
         *** wont work because self.keys is not updated for the other elements
         so perhaps is cheaper to do a total refresh'''
         if mainkey in self:
-            for key,func in self.keys:
-                val=self.index[key]['val'][mainkey]
-                _ik=bs.bisect_left(self.index[key]['index'],val)
-                del self.index[key]['index'][_ik]
-                del self.index[key]['key'][_ik]
-                del self.index[key]['val'][mainkey]
-                #or self.updateindex([],[],key=mainkey,op=list.__delitem__)
+            self._remove_indexed_item(mainkey)
         for key,func in self.keys:
             val=func(value)
             _ik=bs.bisect_left(self.index[key]['index'],val)
@@ -84,13 +89,7 @@ class IndexedDict(dict):
 
     def __delitem__(self,mainkey):
         ''' Delete this item in all indexes and delete de item'''
-        for key,func in self.keys:
-            val=self.index[key]['val'][mainkey]
-            _ik=bs.bisect_left(self.index[key]['index'],val)
-            del self.index[key]['index'][_ik]
-            del self.index[key]['key'][_ik]
-            del self.index[key]['val'][mainkey]
-            #or self.updateindex([],[],key=mainkey,op=list.__delitem__)
+        self._remove_indexed_item(mainkey)
         super(IndexedDict, self).__delitem__(mainkey)
 
 

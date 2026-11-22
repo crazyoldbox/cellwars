@@ -18,7 +18,7 @@ class Animate():
         self.len_images = 0
         self.image_pos = 0
         self.ani_speed = ani_speed
-        self.loc = IMGDIR+self.user +'/'+ self.object.tipo + '/'
+        self.loc = IMGDIR / self.user / self.object.tipo
         self.status = None
         self.image = None
         self.sprite = pygame.sprite.Sprite()
@@ -31,7 +31,7 @@ class Animate():
            the actual status of the user and restes the position of the
            images to 0.'''
 
-        location = self.loc + self.object.status
+        location = self.loc / self.object.status
         animation_list = [a for a in os.listdir(location) if a.endswith('.png')]
         # or import glob; list=glob.glob(location+'/*.png')
         animation_list.sort()
@@ -46,7 +46,7 @@ class Animate():
         if ticks%self.ani_speed == 0 or force:
             self.image_dir = self.images[self.image_pos]
             self.image_pos = (self.image_pos+1)%self.len_images
-            location = self.loc+ self.object.status +'/'+ self.image_dir
+            location = self.loc / self.object.status / self.image_dir
             if location not in Animate.cache.keys():
                 self.image = pygame.image.load(location).convert_alpha()
                 Animate.cache[location] = self.image
